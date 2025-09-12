@@ -1,5 +1,3 @@
-// src/App.jsx
-// BrowserRouter는 index.js에서만! (App에는 넣지 마세요)
 import "./App.css";
 import { Routes, Route, Outlet, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState, useCallback } from "react";

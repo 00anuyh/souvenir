@@ -1,4 +1,3 @@
-// src/components/SocialLogin.js
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -67,7 +66,7 @@ const SocialLogin = ({ onNaverReady }) => {
 
     const naver = new window.naver.LoginWithNaverId({
       clientId: process.env.REACT_APP_NAVER_CLIENT_ID || "THhrZojVhV58FwpUn3Se",
-      callbackUrl: process.env.REACT_APP_NAVER_CALLBACK_URL || "https://00anuyh.github.io/SovenirhomeP/login",
+      callbackUrl: process.env.REACT_APP_NAVER_CALLBACK_URL || "https://00anuyh.github.io/souvenir/login",
       isPopup: false,
       loginButton: { color: "green", type: 3, height: 56 },
     });
