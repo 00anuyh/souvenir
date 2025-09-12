@@ -1,0 +1,227 @@
+/* <!---------------------
+        섹션시작
+----------------------> */
+.toptitle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 50px 0;
+}
+
+
+.toptitle .titleleft,
+.toptitle .titleright {
+
+    width: 40%;
+    height: 2px;
+    background-color: #5E472F;
+}
+
+.toptitle h2 {
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+    font-weight: 500;
+    font-family: "Playfair Display", serif;
+}
+
+.newsBanner {
+    width: 100%;
+    height: 550px;
+    margin-top: 20px;
+    background-color: #777;
+}
+
+.comTap {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+
+    margin-bottom: 100px;
+}
+
+.comTap .combtn {
+    width: 100px;
+    padding: 5px 15px;
+    background-color: #5E472F;
+    color: #FFF;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform .08s ease;
+}
+
+.comTap .combtn:hover {
+    background: #06301A;
+    color: #fff;
+}
+
+.comTap .combtn:active {
+    transform: translateY(1px);
+}
+
+.comTap .combtn:focus-visible {
+    outline: 2px solid #5E472F;
+    outline-offset: 2px;
+}
+
+.comList {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 50px;
+}
+
+.comBox {
+    display: flex;
+    gap: 100px;
+    align-items: stretch;
+    padding: 0 50px;
+
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.comImg {
+    flex: 0 0 50%;
+    height: 300px;
+}
+
+.comImg img {
+    width: 100%;
+    height: 100%;
+    display: block;
+
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.comInpo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.comUser {
+    display: flex;
+    align-items: center;
+
+    gap: 16px;
+    min-height: 60px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+
+.comUser img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.comText {
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    line-height: 1.8;
+    word-break: break-word;
+    white-space: pre-wrap;
+    cursor: pointer;
+}
+
+.like-tag-mes {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+    margin-top: auto;
+    user-select: none;
+}
+
+.like-tag-mes>div {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: transform .08s ease;
+}
+
+.like-tag-mes>div:active {
+    transform: translateY(1px);
+}
+
+.ltm-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.ltm-num {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+.comLine {
+    width: 100%;
+    height: 1px;
+    background-color: #5E472F;
+
+    opacity: 0.25;
+    margin-bottom: 20px;
+}
+
+.comEmpty {
+    padding: 80px 20px;
+    text-align: center;
+    color: #777;
+}
+
+.comEmpty .combtn {
+    margin-top: 12px;
+}
+
+.comPageNum {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    margin: 24px 0 50px;
+    flex-wrap: wrap;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.comPageNum button {
+    background: #fff;
+    color: #2a2a2a;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color .15s ease, color .15s ease, border-color .15s ease, transform .08s ease;
+}
+
+.comPageNum button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.comPageNum .pageStat {
+    margin-left: 4px;
+    color: #2a2a2a;
+    font-size: 13px;
+}
+
+
+/* <!---------------------
+        섹션끝
+----------------------> */

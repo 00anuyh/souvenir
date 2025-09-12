@@ -1,0 +1,383 @@
+/* 컨테이너 */
+.container {
+    width: min(var(--maxw), 100% - 2*var(--container-px));
+    margin-inline: auto;
+}
+
+/* ===== Hero ===== */
+.hero {
+    height: 600px;
+    margin: 20px 0;
+}
+
+.hero-grid {
+    position: relative;
+    top: 0;
+    left: -50%;
+    transform: translateX(40%);
+}
+
+.hero-main {
+    width: 70%;
+    height: 600px;
+    margin: 0;
+    background-color: #7d6c54;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-main img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity .35s ease;
+    z-index: 1;
+}
+
+.hero-main img.is-active {
+    opacity: 1;
+}
+
+/* 장식 원/사각형 */
+.decor,
+.square {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: right .35s ease;
+    z-index: 20;
+    cursor: pointer;
+}
+
+.decor {
+    border-radius: 50%;
+    background: #4a6549c9;
+}
+
+.square {
+    background: #5e472fc2;
+}
+
+.decor-1 {
+    width: 250px;
+    height: 250px;
+}
+
+.square-1 {
+    width: 230px;
+    height: 240px;
+}
+
+.decor-2 {
+    width: 250px;
+    height: 250px;
+}
+
+.square-2 {
+    width: 240px;
+    height: 240px;
+}
+
+.square img,
+.decor img {
+    width: 70%;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, .15));
+}
+
+/* ===== Section Title ===== */
+.section {
+    padding: 30px 0 50px 0;
+}
+
+/* ===== Product Grid (조금 작게) ===== */
+.product-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+    gap: 30px;
+    /* 30 → 22 */
+}
+
+.product-card {
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+
+}
+
+.product-media {
+    position: relative;
+    overflow: hidden;
+    line-height: 0;
+    /* 베이스라인 제거 */
+}
+
+/* 정사각형 컨테이너 */
+.product-media::before {
+    content: "";
+    display: block;
+    padding-top: 100%;
+    /* 1:1 비율 유지 */
+}
+
+.product-media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: translateZ(0);
+    /* 서브픽셀 틈 방지 */
+}
+
+.product-card {
+    position: relative;
+    overflow: hidden;
+}
+
+/* 이미지 래퍼 */
+.product-media {
+    position: relative;
+    display: block;
+}
+
+/* 우상단 아이콘 */
+.icon-bar {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 8px;
+    z-index: 3;
+}
+
+/* 하단 캡션: 그라디언트로 가독성 확보 */
+.product-card {
+    position: relative;
+    overflow: hidden;
+}
+
+/* 캡션: 상단에 위치 + 기본적으로 숨김 */
+.product-caption {
+    position: absolute;
+    top: 0;
+    /* ✅ 상단으로 */
+    left: 0;
+    right: 0;
+    padding: 10px 12px 12px;
+    color: #fff;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 2;
+    opacity: 0;
+    /* 기본 숨김 */
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* hover 시 나타남 */
+.product-card:hover .product-caption {
+    opacity: 1;
+}
+
+/* 제목 줄바꿈 + 긴단어 강제 줄바꿈 + 2줄 클램프 */
+.product-name {
+    font-size: 1.2rem;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 2px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: keep-all;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+/* 가격 */
+.product-price {
+    font-size: 1rem;
+    letter-spacing: 1px;
+    opacity: .9;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+
+/* flex/grid 부모 안에서 줄이 눌리도록 */
+.product-media,
+.product-caption,
+.product-name,
+.product-price {
+    min-width: 0;
+}
+
+
+/* 아이콘(기본 숨김, 크기 축소) */
+.icon-btn {
+    position: absolute;
+    right: 8px;
+    z-index: 2;
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 50%;
+    color: #5e472f;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+    background-color: #bbbbbb88;
+    transition: transform .15s ease, background .2s ease;
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+}
+
+.icon-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.icon-btn.like {
+    top: 8px;
+}
+
+.icon-btn.cart {
+    bottom: 8px;
+}
+
+.icon-btn:hover {
+    transform: translateY(-1px);
+    background: #fff;
+}
+
+.icon-btn.like[aria-pressed="true"] {
+    color: #e03b3b;
+}
+
+.product-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transition: background .25s ease;
+}
+
+.product-card:hover .product-media::after,
+.product-card:focus-within .product-media::after {
+    background: var(--overlay);
+}
+
+.product-card:hover .meta,
+.product-card:focus-within .meta,
+.product-card:hover .icon-btn,
+.product-card:focus-within .icon-btn {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+}
+
+/* SOLD OUT 오버레이 */
+.product-media .badge.soldout::after {
+    content: "SOLD OUT";
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: rgba(0, 0, 0, .55);
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: .12em;
+    font-size: 1.3rem;
+    /* 1.5 → 1.3 */
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-card:hover .product-media .badge.soldout::after {
+    display: flex;
+}
+
+/* more 버튼 */
+.more {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.btn-more {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: #5e472f;
+    font-size: 1.4rem;
+    padding: var(--s-3) var(--s-5);
+    font-family: "Playfair Display", serif;
+
+}
+
+.IoIosArrowDown {
+    font-size: 20px;
+    padding-top: 5px;
+}
+
+.product-grid .product-card {
+    display: block;
+}
+
+
+.cart-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.cart-modal-content {
+    background: #fff;
+    padding: 20px 28px;
+    border-radius: 12px;
+    min-width: 280px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .18);
+}
+
+.cart-modal .actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.cart-modal .btn-primary {
+    background: #5E472F;
+    color: #fff;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.cart-modal .btn-ghost {
+    background: #eee;
+    color: #333;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.cart-modal button:focus {
+    outline: 2px solid #5E472F;
+    outline-offset: 2px;
+}

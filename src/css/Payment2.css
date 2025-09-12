@@ -1,0 +1,270 @@
+/* 진행바 */
+#payment-progress {
+    width: 100%;
+    height: 150px;
+    margin: 50px auto;
+}
+
+#payment-progress ul {
+    display: flex;
+    list-style: none;
+    justify-content: center;
+}
+
+#payment-progress ul li {
+    margin-top: 10px;
+}
+
+.circle,
+.circle2 {
+    width: 40px;
+    height: 40px;
+    border-radius: 25px;
+    border: 1px solid #5e472f;
+    display: flex;
+    justify-content: center;
+}
+
+.circle {
+    background-color: #fff7e4;
+}
+
+.circle2 {
+    background-color: #06301a;
+}
+
+.circle2 p {
+    color: #fff7e4;
+}
+
+.circle p,
+.circle2 p {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.progress-nav,
+.progress-nav2 {
+    text-align: center;
+}
+
+.progress-nav2 {
+    text-decoration: underline;
+}
+
+/* 전체 랩 */
+#cart-wrap {
+    width: 100%;
+    height: auto;
+}
+
+/* 주문 완료 배너 */
+#payment-final {
+    width: 100%;
+}
+
+.payment-final-text {
+    margin: 30px auto;
+    text-align: center;
+    line-height: 250%;
+}
+
+.payment-final-text p:first-child {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.payment-final-text p:last-child {
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+
+.payment-final-button {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 50px;
+}
+
+.payment-final-button1,
+.payment-final-button2 {
+    width: 270px;
+    height: 50px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #fff;
+    font-size: 1.33rem;
+}
+
+.payment-final-button1 {
+    background-color: #5e472f;
+}
+
+.payment-final-button1:hover {
+    background-color: #795d40;
+}
+
+.payment-final-button2 {
+    background-color: #06301A;
+}
+
+.payment-final-button2:hover {
+    background-color: #0d522e;
+}
+
+.payment-final-button2 img {
+    width: 60px;
+}
+
+/* 주문 상품 제목 */
+#cart-title {
+    width: 100%;
+    border-bottom: 2px solid #5e472f;
+}
+
+#cart-title p {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* 카트 아이템 헤더 */
+#cart-item {
+    width: 100%;
+    border-bottom: 2px solid #5e472f;
+
+}
+
+#cart-item ul {
+    display: flex;
+    list-style: none;
+    justify-content: space-around;
+    align-items: center;
+    height: 50px;
+    gap: 50px;
+}
+
+#cart-item ul li {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #5e472f;
+}
+
+/* 카트 리스트 */
+#cart-list {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.cartitem {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid #5e472f;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    padding-right: 50px;
+}
+
+.cartmaplist {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.cartitem-img img {
+    object-fit: cover;
+}
+
+.cartitem-text {
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cart-item-title {
+    font-size: 20px;
+    font-weight: 500;
+    font-weight: 600;
+}
+
+.cart-item-color,
+.cart-item-size,
+.cart-item-price,
+.cart-item-serialnumber {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+
+.payment2-order-status {
+    line-height: 120%;
+}
+
+.payment2-delivery-price,
+.payment2-order-status {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+}
+
+#order-total {
+    height: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-size: 1.4rem;
+    padding: 8px;
+}
+
+/* 카트 푸터 */
+#cart-footer2 {
+    width: 100%;
+    margin-bottom: 100px;
+}
+
+#cart-total {
+    width: 100%;
+    margin-top: 100px;
+}
+
+.cart-total-title {
+    width: 100%;
+    padding: 20px 0;
+    border-bottom: 2px solid #5e472f;
+}
+
+.cart-total-list {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    gap: 100px;
+}
+
+.cart-total-payment4 {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #5e472f;
+    padding: 15px 20px;
+}
+
+.cart-total-inpo {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 100px;
+}

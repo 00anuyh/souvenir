@@ -1,0 +1,62 @@
+#mainheader {
+    width: 100%;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#logo {
+    width: 200px;
+    height: auto;
+}
+
+/* 메뉴 */
+
+#mainnav {
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#menu1,
+#menu2 {
+    font-size: 1.5rem;
+    list-style: none;
+    display: flex;
+    gap: 25px;
+    padding: 8px;
+}
+
+#menu1 a {
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    font-family: "Playfair Display", serif;
+}
+
+#menu2 a {
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    font-family: "NanumSquareRound", serif;
+
+}
+
+
+
+#menu1 a i,
+#menu2 a i {
+    font-weight: 550;
+    font-size: 23px;
+}
+
+#menu1 a:hover,
+#menu2 a:hover {
+    text-decoration: underline;
+}
+
+#menu2 .login_btn p,
+#menu2 .login_btn_li a {
+    font-weight: 400;
+    font-size: 20px;
+    font-family: "NanumSquareRound", serif;
+}

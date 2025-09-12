@@ -1,0 +1,149 @@
+:root {
+    --card-radius: 12px;
+    --pad: 16px;
+    --fg: #fff;
+    --muted: rgba(255, 255, 255, .85);
+    --shade: linear-gradient(180deg, rgba(0, 0, 0, .10) 10%, rgba(0, 0, 0, .55) 70%, rgba(0, 0, 0, .75) 100%);
+}
+
+/* 카드 */
+.news-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    color: var(--fg);
+    background: #fff center/cover no-repeat;
+    background-image: var(--img);
+}
+
+.news-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--shade);
+    pointer-events: none;
+}
+
+/* 상단 메타 */
+.news-meta {
+    position: absolute;
+    top: var(--pad);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    z-index: 1;
+    font-size: 13px;
+    background-color: rgba(128, 128, 128, 0.438);
+    width: 100%;
+    padding: 5px 10px;
+}
+
+.news-meta .logo {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.news-meta .sep {
+    opacity: 1;
+}
+
+/* 제목 */
+.news-title {
+    position: absolute;
+    left: 50px;
+    bottom: 64px;
+    z-index: 1;
+    font-weight: 800;
+    line-height: 1.18;
+    letter-spacing: -0.2px;
+    font-size: clamp(18px, 3.2vw, 28px);
+    color: #fff;
+
+    /* ⬇️ 추가: 200px에서 … 처리 */
+    width: 900px;
+    /* 텍스트 박스 너비 */
+    white-space: nowrap;
+    /* 한 줄로 */
+    overflow: hidden;
+    /* 넘치는 부분 숨김 */
+    text-overflow: ellipsis;
+    /* 끝에 … 표시 */
+}
+
+/* 좌우 네비 */
+.nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, .45);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, .25);
+}
+
+.nav:hover {
+    background: rgba(0, 0, 0, .6);
+}
+
+.nav.prev {
+    left: 8px;
+}
+
+.nav.next {
+    right: 8px;
+}
+
+.nav svg {
+    width: 18px;
+    height: 18px;
+}
+
+.nav:disabled {
+    opacity: .35;
+    cursor: default;
+}
+
+/* 하단 도트 */
+.dots {
+    position: absolute;
+    left: 50%;
+    bottom: 40px;
+    transform: translateX(-50%);
+    z-index: 1;
+    display: flex;
+    gap: 6px;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .4);
+}
+
+.dot.active {
+    background: #fff;
+    width: 28px;
+    border-radius: 4px;
+}
+
+/* a11y */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

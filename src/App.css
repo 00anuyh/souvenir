@@ -1,0 +1,110 @@
+@charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+@font-face {
+  font-family: 'NanumSquareRound';
+  src: url('/public/fonts/NanumSquareRoundOTFR.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  box-sizing: border-box;
+}
+
+body {
+  cursor: url("https://00anuyh.github.io/SouvenirImg/mouse.png") 3 3, auto;
+}
+
+/* 부드러운 스크롤 */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 페이지 페이드: transform 사용 금지 (fixed/sticky 깨짐 방지) */
+.page-fade {
+  animation: pageFadeIn .80s ease both;
+  will-change: opacity;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+html,
+body {
+  margin: 0 auto;
+  padding: 0;
+  background-color: #fff;
+  color: #5E472F;
+  font-family: "NanumSquareRound", serif;
+  font-optical-sizing: auto;
+  font-style: none;
+  overflow-x: hidden;
+}
+
+a {
+  color: #5E472F;
+  text-decoration: none;
+}
+
+h3 {
+  width: 100%;
+  font-size: 2.2rem;
+  color: #5E472F;
+  margin-bottom: 15px;
+  padding: 2px 5px;
+  font-family: "Playfair Display", serif;
+}
+
+.Warp {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+
+/* 전역 변수: 기본 여백 + 푸터 겹침 보정 */
+:root {
+  --fab-base-bottom: 15px;
+  --fab-push-up: 0px;
+  /* JS가 필요시 값 업데이트 */
+}
+
+/* 플로팅 아이콘 */
+.floating-ask {
+  position: fixed;
+  right: 30px;
+  bottom: calc(var(--fab-base-bottom) + var(--fab-push-up));
+  z-index: 5000;
+  transition: bottom .2s ease, transform .2s ease, opacity .2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* 모달 컨테이너(챗봇) */
+.chatbot-container {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 5500;
+  transition: bottom .2s ease, transform .2s ease, opacity .2s ease;
+}
+
+/* 모달이 열릴 때 아이콘만 숨기고(사라지는 문제와 무관), 
+   푸터 보정과는 관련없도록 별개 상태로 둡니다. */
+.floating-ask.hidden {
+  opacity: 0;
+  pointer-events: none;
+}

@@ -1,0 +1,127 @@
+.chatbot-container {
+    width: 400px;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background-color: #FFFCF5;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    padding: 10px 20px 20px;
+    font-size: 14px;
+
+}
+
+.chatbot-title {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    gap: 10px;
+    font-family: "Playfair Display", serif;
+    color: #06301A;
+    font-size: 1.5rem;
+    font-weight: 500;
+    letter-spacing: 1.5%;
+    padding: 10px;
+}
+
+.Chatbot-Close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 26px;
+    color: #06301A;
+}
+
+.Chatbot-Close :hover {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+
+.chat-notice {
+    border-radius: 20px;
+    margin: 10px auto;
+    width: 90%;
+    box-shadow: 0 0 1px 1px #c2c2c2;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+    padding: 10px;
+
+}
+
+.chat-noticeicon {
+    font-size: 36px;
+    color: #06301A;
+}
+
+
+
+
+.message-list {
+    height: 370px;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.user-message {
+    background-color: #06301A;
+    color: white;
+    border-radius: 20px;
+    padding: 10px;
+    margin: 5px 0;
+    max-width: 70%;
+    align-self: flex-end;
+    text-align: right;
+    position: relative;
+}
+
+
+.bot-message {
+    background-color: #5E472F;
+    color: #ffffff;
+    border-radius: 50px;
+    padding: 10px 15px;
+    margin: 5px 0;
+    max-width: 70%;
+    align-self: flex-start;
+    text-align: left;
+    position: relative;
+}
+
+.input-container {
+    bottom: 20px;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #fff;
+    /* border-top: 1px solid #ccc; */
+    border: 1.5px solid #5E472F;
+    border-radius: 30px;
+}
+
+.input-container input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    padding: 5px;
+}
+
+.input-container button {
+    background-color: #06301A;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}

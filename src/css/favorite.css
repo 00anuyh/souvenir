@@ -1,0 +1,89 @@
+#fav-wrap {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+.fav-title {
+
+    margin: 0 auto;
+    margin-top: 50px;
+    width: 1440px;
+    text-align: center;
+    font-family: "Playfair Display", serif;
+    font-size: 1.7rem;
+}
+
+.fav-line {
+    width: 1440px;
+    height: 1px;
+    background-color: #5e472f;
+    margin: 0 auto;
+}
+
+.fav-container {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 50px;
+    height: 100vh;
+}
+
+.fav-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 0 100px 50px;
+    margin-top: 50px;
+    padding: 0 100px;
+}
+
+.fav-box {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    position: relative;
+}
+
+.fav-box img {
+    top: 0;
+    left: 0;
+    display: block;
+    width: 90%;
+}
+
+.fav-box:hover img {
+    filter: brightness(50%);
+    z-index: 2;
+}
+
+
+.fav-box p {
+    display: none;
+    position: absolute;
+    top: 10px;
+    left: 30px;
+    z-index: 3;
+    color: #fff;
+    line-height: 32px;
+}
+
+.fav-box:hover p {
+    display: block;
+}
+
+
+.fav-box i {
+    position: absolute;
+    color: #fff;
+    display: none;
+    bottom: 20px;
+    right: 40px;
+    z-index: 5;
+    font-size: 1.2rem;
+}
+
+.fav-box:hover i {
+    display: block;
+}

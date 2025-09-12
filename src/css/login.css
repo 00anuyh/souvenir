@@ -1,0 +1,585 @@
+#login-wrap {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  height: 130vh;
+}
+
+/* 로그인 상단 안내 */
+#login-progress {
+  width: 1440px;
+  height: 130px;
+  margin: 0 auto;
+  margin-top: 50px;
+}
+
+#login-progress ul {
+  display: flex;
+  list-style: none;
+  justify-content: center;
+}
+
+#login-progress ul li {
+  /* background-color: azure; */
+  margin-top: 10px;
+}
+
+.circle {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #5e472f;
+  border-radius: 25px;
+  /* background-color: #fff7e4; */
+  margin: 30px 60px 10px 60px;
+  background-color: #FFFCF5;
+}
+
+.ntt {
+  font-size: 20px;
+  margin-top: 40px;
+}
+
+.circle p {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.circle2 {
+  width: 40px;
+  height: 40px;
+  border-radius: 25px;
+  border: 2px solid #06301a;
+  background-color: #06301a;
+  margin: 30px 60px 10px 60px;
+}
+
+.circle2 p {
+  text-align: center;
+  margin-top: 10px;
+  color: #fff7e4;
+}
+
+.progress-nav {
+  text-align: center;
+  font-family: "Playfair Display", serif;
+}
+
+.progress-nav2 {
+  text-align: center;
+  text-decoration: underline;
+  color: #06301a;
+  font-family: "Playfair Display", serif;
+}
+
+
+
+/*----------- 로그인 ---------- */
+.login-title {
+  display: block;
+  width: 150px;
+  margin: 0 auto;
+  margin-top: 60px;
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  font-size: 28px;
+  color: #06301A;
+  text-align: center;
+}
+
+.login-card {
+  margin: 0 auto;
+  margin-top: 20px;
+  max-width: 410px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+}
+
+/* .field-label {
+  margin-top: 15px;
+  text-align: end;
+  font-size: 20px;
+  color: #5e472f;
+  font-weight: 600;
+  width: 80px;
+} */
+
+.field input,
+.field select {
+  margin-top: 15px;
+  flex: 1;
+  height: 58px;
+  border-radius: 10px;
+  border: 2px solid rgba(94, 71, 47, 0.366);
+  box-shadow: 0 0 5px rgba(184, 168, 137, 0.25);
+  background: rgba(255, 255, 255, 0.5);
+  outline: none;
+  font-size: 1.2rem;
+  padding: 10px 20px;
+
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: #b8a889;
+}
+
+.loginbtn-box {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+/* .area {
+  width: 80px;
+} */
+
+.btn {
+  flex: 1;
+  height: 60px;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn.loginbtn {
+  margin-top: 15px;
+  background: #06301a;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.btn.loginbtn:hover {
+  background: #06301abf;
+
+}
+
+.sub-links {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: end;
+  gap: 10px;
+}
+
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #6b5f50;
+  cursor: pointer;
+  padding: 4px 6px;
+  font-size: 14px;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+
+
+/*-------- 간편로그인 --------*/
+
+.simple-login {
+  margin: 50px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #5e472f;
+}
+
+.socialtitle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 50px 0;
+}
+
+.socialtitle .socialleft,
+.socialtitle .socialright {
+  width: 40%;
+  height: 1px;
+  background-color: #5E472F;
+}
+
+.socialtitle h4 {
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  font-weight: 600;
+  font-family: 'NanumSquareRound';
+}
+
+.sns-row {
+  display: flex;
+  gap: 30px;
+}
+
+.sns {
+  background-color: transparent;
+}
+
+.sns-img {
+  width: 56px;
+  height: 56px;
+  display: block;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.naver-wrap {
+  position: relative;
+  width: 56px;
+  height: 56px;
+}
+
+.naver-sdk-btn {
+  cursor: pointer;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  /* 클릭은 SDK로 */
+}
+
+.naver-sdk-btn a,
+.naver-sdk-btn iframe {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 0 !important;
+  border: 0 !important;
+}
+
+.naver-skin {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+
+/* ---------- 회원가입 모달 ---------- */
+
+.modal-overlay {
+  /*   overflow: scroll; */
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, .25);
+  display: grid;
+  place-items: center;
+  z-index: 999;
+}
+
+.modal {
+  width: 420px;
+  max-width: 50vw;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 5px 28px 28px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, .25);
+  background: #FFFCF5;
+  position: relative;
+}
+
+.modal-close i {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 36px;
+  font-size: 1.4rem;
+  line-height: 34px;
+  color: #6b5f50;
+  cursor: pointer;
+}
+
+
+
+.modal-title {
+  margin: 30px 0 10px;
+  font-size: 1.3rem;
+  color: #5E472F;
+}
+
+.modal-line {
+  height: 1px;
+  background: #5E472F;
+  border: none;
+  margin: 0 auto;
+}
+
+.signup-form {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+}
+
+.field2 {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  column-gap: 10px;
+  align-items: center;
+  font-size: 1rem;
+}
+
+
+.field2 input,
+.field2 select {
+  width: 100%;
+  height: 35px;
+  padding: 0 16px;
+  border-radius: 5px;
+  border: 1px solid rgba(94, 71, 47, 0.366);
+  box-shadow: 0 0 5px rgba(184, 168, 137, .25);
+  background: rgba(255, 255, 255, .5);
+  outline: none;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+  font-family: 'NanumSquareRound';
+
+}
+
+
+.field2 input:focus,
+.field2 select:focus {
+  border-color: #b8a889;
+}
+
+
+.id-row .id-inputs {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 5px;
+}
+
+.confirmbtn {
+  height: 35px;
+  background: #06301A;
+  color: #fff;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  font-size: 0.8rem;
+  cursor: pointer;
+  font-family: 'NanumSquareRound';
+}
+
+/* 3) 연락처: 라벨을 제외한 나머지 공간을 3등분 */
+.field2 .triple {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* ← 1/3씩 균등 */
+  gap: 5px;
+  width: 100%;
+}
+
+/* 4) 이메일: [로컬] [@] [도메인] */
+.field2 .double {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  /* 가운데 @은 내용폭 */
+  gap: 5px;
+  align-items: center;
+}
+
+.double .at {
+  font-weight: 500;
+  color: #6b5f50;
+}
+
+/* 5) 라벨 */
+.field-label2 {
+  justify-self: end;
+  /* 오른쪽 정렬 */
+  text-align: right;
+  font-size: 1rem;
+  color: #5e472f;
+  font-weight: 500;
+}
+
+
+.triple {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 5px;
+}
+
+.double {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 5px;
+  align-items: center;
+}
+
+.double .at {
+  color: #6b5f50;
+  font-weight: 600;
+}
+
+.warn {
+  margin-top: 6px;
+  color: #d64545;
+  font-size: 13px;
+}
+
+.singupbtn {
+  margin-left: 130px;
+  background: #06301a;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  height: 40px;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: 'NanumSquareRound';
+
+}
+
+.singupbtn:hover {
+  background: #06301abf;
+
+}
+
+
+
+/* 회원가입 상단 안내 */
+
+#singup-progress {
+  display: flex;
+  flex-direction: row;
+  gap: 10;
+  justify-content: center;
+  margin: 20px auto;
+}
+
+#singup-progress ul {
+  display: flex;
+  list-style: none;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+
+}
+
+#singup-progress ul li {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  font-weight: 300;
+  margin-left: 15px;
+}
+
+.circle2-1 {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #5e472f;
+  border-radius: 25px;
+  background-color: #ffffff;
+
+}
+
+p.ntt {
+  font-size: 14px;
+  margin-bottom: 50px;
+}
+
+.a_circle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.circle2-2 {
+  width: 30px;
+  height: 30px;
+  border-radius: 25px;
+  border: 1px solid #06301a;
+  background-color: #06301a;
+}
+
+.circle2-2 p {
+  color: #fff7e4;
+}
+
+.progress-nav2-1 {
+  text-align: center;
+  font-family: "Playfair Display", serif;
+  font-size: 0.65rem;
+}
+
+.progress-nav2-2 {
+  text-align: center;
+  text-decoration: underline;
+  color: #06301a;
+  font-family: "Playfair Display", serif;
+  font-size: 0.65rem;
+}
+
+/* =========================
+   관리자 로그인 모달
+   ========================= */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-panel {
+  width: 100%;
+  max-width: 360px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .2);
+}
+
+.modal-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.modal-form input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.modal-error {
+  color: #d33;
+  font-size: 12px;
+  margin: 4px 0 0;
+}
+
+.modal-sub {
+  margin-top: 8px;
+  text-align: right;
+}

@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "brand": "뚜뚜아트",
+    "title": "감성 목마 원목 말 흔들 목마 우드 오브제",
+    "color": "brown",
+    "size": "small",
+    "unitPrice": "95000 원",
+    "qty": 1,
+    "orderNo": "8975648",
+    "image": "https://00anuyh.github.io/SouvenirImg/cartitem1.png",
+    "checked": false,
+    "delivery": 0
+  },
+  {
+    "id": 2,
+    "brand": "뚜뚜아트",
+    "title": "감성 목마 원목 말 흔들 목마 우드 오브제",
+    "color": "brown",
+    "size": "small",
+    "unitPrice": "95000 원",
+    "qty": 1,
+    "orderNo": "8975648",
+    "image": "https://00anuyh.github.io/SouvenirImg/cartitem2.png",
+    "checked": false,
+    "delivery": 0
+  },
+  {
+    "id": 3,
+    "brand": "뚜뚜아트",
+    "title": "감성 목마 원목 말 흔들 목마 우드 오브제",
+    "color": "brown",
+    "size": "small",
+    "unitPrice": "95000 원",
+    "qty": 1,
+    "orderNo": "8975648",
+    "image": "https://00anuyh.github.io/SouvenirImg/cartitem3.png",
+    "checked": false,
+    "delivery": 0
+  }
+]

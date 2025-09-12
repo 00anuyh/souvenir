@@ -1,0 +1,108 @@
+footer {
+    width: 100vw;
+    /* 화면 가로 전체 */
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    background: #5E472F;
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+#footerwrap {
+    width: 100%;
+    max-width: 1440px;
+    /* 안쪽 콘텐츠 최대 1440px */
+    margin: 0 auto;
+    /* 가운데 정렬 */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#topfoo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #fff;
+    padding-bottom: 20px;
+}
+
+#topfoo .footitle {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#topfoo .foophone {
+    font-size: 17px;
+    margin: 5px 0;
+    font-weight: bold;
+}
+
+#topfoo .foosocial {
+    display: flex;
+    gap: 15px;
+}
+
+#topfoo .foocircle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    display: inline-block;
+}
+
+#middlefoo {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+}
+
+.foonotice {
+    width: 50%;
+}
+
+.foonotice h4 {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.foonotice p {
+    margin: 5px 0;
+    font-size: 13px;
+}
+
+.guidemenu {
+    display: flex;
+    gap: 60px;
+}
+
+.guidemenu ul {
+    list-style: none;
+    padding: 0;
+}
+
+.guidemenu .guidetitle {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#bottomfoo {
+    border-top: 1px solid #fff;
+    padding-top: 20px;
+    text-align: center;
+}
+
+.bottommenu {
+    margin-bottom: 10px;
+}
+
+.bottommenu a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+.bottomtext p {
+    font-size: 12px;
+    opacity: 0.9;
+}

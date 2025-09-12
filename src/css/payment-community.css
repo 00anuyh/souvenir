@@ -1,0 +1,243 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
+
+
+
+#community-title {
+  width: 100%;
+  height: 50px;
+  margin-top: 60px;
+}
+
+#community-title ul {
+  list-style: none;
+  display: flex;
+}
+
+#community-title ul li:nth-child(1) {
+  width: 40%;
+  height: 25px;
+  opacity: 60%;
+  border-bottom: 1px solid #5e472f;
+}
+
+#community-title ul li:nth-child(2) {
+  width: 20%;
+  height: 50px;
+}
+
+#community-title ul li:nth-child(2) p {
+  font-size: 50px;
+  text-align: center;
+}
+
+#community-title ul li:nth-child(3) {
+  width: 40%;
+  height: 25px;
+  opacity: 60%;
+  border-bottom: 1px solid #5e472f;
+}
+
+#community-content {
+  position: relative;
+  width: 100%;
+  height: 720px;
+  margin-top: 120px;
+}
+
+.community-content-l {
+  position: absolute;
+  width: 645px;
+  height: 600px;
+  top: 30px;
+  left: 50px;
+}
+
+.insert-photo {
+  width: 100%;
+  height: 490px;
+  border-radius: 12px;
+  box-shadow:
+    -2px 0 2px rgba(0, 0, 0, 0.3),
+    /* 오른쪽 그림자 */
+    1px 0 2px rgba(0, 0, 0, 0.3),
+    /* 왼쪽 그림자 */
+    0 2px 5px rgba(0, 0, 0, 0.3),
+    /* 아래 그림자 */
+    0 2px 5px rgba(0, 0, 0, 0.3);
+  /* 위 그림자 */
+  background-color: white;
+}
+
+.insert-photo p {
+  font-size: 50px;
+  text-align: center;
+  padding-top: 220px;
+}
+
+.insert-photo p img {
+  width: 45px;
+}
+
+.sub-photo-box {
+  width: 100%;
+  height: 90px;
+  margin-top: 20px;
+}
+
+.sub-photo-box ul {
+  list-style: none;
+  display: flex;
+}
+
+.sub-photo-box ul li {
+  width: 100px;
+  height: 90px;
+  margin-right: 30px;
+  box-shadow:
+    -2px 0 2px rgba(0, 0, 0, 0.3),
+    /* 오른쪽 그림자 */
+    1px 0 2px rgba(0, 0, 0, 0.3),
+    /* 왼쪽 그림자 */
+    0 2px 5px rgba(0, 0, 0, 0.3),
+    /* 아래 그림자 */
+    0 2px 5px rgba(0, 0, 0, 0.3);
+  /* 위 그림자 */
+  border-radius: 8px;
+  background-color: white;
+}
+
+.sub-photo-box ul li p {
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+  padding-top: 30px;
+  cursor: pointer;
+}
+
+.sub-photo-box ul li:hover {
+  background-color: #fff7e4;
+}
+
+.community-content-r {
+  position: absolute;
+  width: 692px;
+  height: 700px;
+  right: 0;
+}
+
+.community-content-r ul {
+  display: flex;
+  list-style: none;
+}
+
+.community-profile {
+  width: 97px;
+  height: 97px;
+  border-radius: 50px;
+  border: 3px solid #5e472f;
+  background-color: white;
+}
+
+.community-content-r ul li p {
+  font-size: 30px;
+  font-weight: bold;
+  padding-top: 33px;
+  margin-left: 30px;
+  color: #5e472f;
+}
+
+.community-content-r ul li button {
+  width: 326px;
+  height: 70px;
+  margin-left: 122px;
+  border-radius: 15px;
+  border: 1px solid #5e472f;
+  background-color: white;
+  cursor: pointer;
+}
+
+.community-content-r ul li button:hover {
+  background-color: #fff7e4;
+}
+
+.community-content-r ul li button img {
+  width: 30px;
+  float: left;
+  margin-left: 80px;
+  margin-right: -70px;
+}
+
+.community-content-r ul li button p {
+  font-size: 20px;
+  margin-top: -33px;
+  color: #5e472f;
+}
+
+.community-content-title {
+  width: 100%;
+  height: 70px;
+  border-radius: 10px;
+  margin-top: 50px;
+  border: 1px solid #5e472f;
+  background-color: white;
+}
+
+.community-content-title input {
+  color: #5e472f;
+  font-weight: bold;
+  margin-left: 20px;
+  font-size: 30px;
+  padding-top: 17px;
+  background: none;
+}
+
+.community-content-title input::placeholder {
+  color: #5e472f;
+  font-weight: bold;
+  font-family: "NanumSquareRound", sans-serif;
+}
+
+.community-content-text {
+  width: 100%;
+  height: 339px;
+  border-radius: 10px;
+  margin-top: 50px;
+  border: 1px solid #5e472f;
+  background-color: white;
+}
+
+.community-content-text input {
+  font-size: 30px;
+  color: #5e472f;
+  font-weight: bold;
+  width: 90%;
+  margin-left: 20px;
+  padding-top: 20px;
+}
+
+.community-content-text input::placeholder {
+  font-size: 30px;
+  color: #5e472f;
+  font-weight: bold;
+  font-family: "NanumSquareRound", sans-serif;
+}
+
+.text-submit {
+  width: 100%;
+  height: 80px;
+  margin-top: 14px;
+  border-radius: 12px;
+  background-color: #5e472f;
+  cursor: pointer;
+}
+
+.text-submit p {
+  font-size: 30px;
+  font-weight: bold;
+  color: white;
+}
+
+.text-submit:hover {
+  background-color: #866847;
+}

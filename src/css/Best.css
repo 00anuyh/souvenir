@@ -1,0 +1,139 @@
+.besttitle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 50px 0;
+}
+
+.besttitle .titleleft,
+.besttitle .titleright {
+    width: 40%;
+    height: 2px;
+    background-color: #5E472F;
+}
+
+.besttitle h2 {
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+    font-weight: 500;
+    font-family: "Playfair Display", serif;
+}
+
+/* 배너 */
+.bestBanner {
+    width: 100%;
+    height: 550px;
+    margin-top: 20px;
+}
+
+.bestBanner .swiper,
+.bestBanner .swiper-wrapper,
+.bestBanner .swiper-slide {
+    height: 100%;
+}
+
+.bestBanner .swiper-slide {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    text-align: center;
+    color: #fff;
+    background-size: cover;
+    background-position: center;
+}
+
+/* .bestBanner .swiper-slide span,
+.bestBanner .swiper-slide p {
+    position: relative;
+    z-index: 1;
+} */
+
+.bestBanner .swiper-slide span {
+    font: 700 1.4rem "Playfair Display", serif;
+    letter-spacing: .5px;
+}
+
+.bestBanner .swiper-slide p {
+    margin: 10px 20px 0 0;
+    font: 400 1rem;
+    opacity: .95;
+}
+
+/* 배경이미지 */
+.bstimg1 {
+    background-image: url("https://00anuyh.github.io/SouvenirImg/Best_banner1.png");
+}
+
+.bstimg2 {
+    background-image: url("https://00anuyh.github.io/SouvenirImg/Best_banner2.png");
+}
+
+.bstimg3 {
+    background-image: url("https://00anuyh.github.io/SouvenirImg/Best_banner3.png");
+}
+
+.bstimg4 {
+    background-image: url("https://00anuyh.github.io/SouvenirImg/Best_banner4.png");
+}
+
+
+/* 페이지네이션 커스터마이즈 */
+.bestBanner .swiper-pagination {
+    position: absolute;
+    bottom: 15px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+}
+
+/* 점 → 막대(ㅡ) 모양 */
+.bestBanner .swiper-pagination-bullet {
+    width: 20%;
+    height: 3px;
+    margin: 0 6px;
+    border-radius: 2px;
+    background: #fff;
+    opacity: 0.5;
+    transition: all .3s;
+}
+
+.bestBanner .swiper-pagination-bullet-active {
+    background: #fff;
+    opacity: 1;
+    margin: 0 6px;
+}
+
+
+
+/* 카드가 배지를 가리지 않게 */
+.product-card {
+    position: relative;
+    overflow: visible;
+
+    /* 💡 배지 아랫부분(파인 곳)에 보일 배경색을 변수로 지정 */
+    --card-bg: #f2eee7;
+    /* 페이지/카드 바탕색으로 맞추세요 */
+}
+
+/* 리본 배지 */
+.rank-badge {
+    background-color: #5E472F;
+    position: absolute;
+    bottom: 0;
+    left: 6px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 35px;
+    height: 35px;
+    padding: 0 6px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 0 0;
+}

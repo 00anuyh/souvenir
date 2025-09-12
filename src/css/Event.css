@@ -1,0 +1,365 @@
+.a_event_wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: "NanumSquareRound", serif;
+}
+
+.a_event_container {
+    width: 100%;
+    margin: 0 auto;
+    font-family: "NanumSquareRound", serif;
+}
+
+
+/* 초록배너 영역 */
+.a_event_banner {
+    position: relative;
+    margin-top: 50px;
+    width: 100%;
+    height: 250px;
+    background-color: #06301A;
+    border-radius: 30px;
+    padding: 50px 150px;
+    text-align: center;
+}
+
+.a_event_textbox {
+    margin-top: 30px;
+}
+
+.a_event_banner p {
+    color: #fff;
+    margin-bottom: 50px;
+    font-size: 18px;
+}
+
+.a_event_banner p.a_event_text1 {
+    font-size: 24px;
+}
+
+.a_event_banner img {
+    height: 150px;
+    position: absolute;
+    right: 250px;
+    bottom: 50px;
+}
+
+.a_event_mainbox {
+    margin: 50px 0;
+    padding: 50px 0;
+    border-radius: 30px;
+    background-size: cover;
+
+}
+
+.a_event_mainbox .letters {
+    position: relative;
+    overflow: visible;
+    /* ✅ 확대가 잘 보이도록 */
+    padding: 0 50px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    justify-content: center;
+}
+
+.letter {
+    margin-top: 25px;
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    height: 340px;
+
+
+    position: relative;
+    cursor: pointer;
+    transform: translateZ(0);
+    /* 합성레벨 올려서 부드럽게 */
+    will-change: transform, filter, box-shadow;
+    transition: transform .35s ease, filter .3s ease, box-shadow .35s ease;
+    z-index: 1;
+    /* 기본 레이어 */
+
+}
+
+.letter img {
+    display: block;
+    width: 70%;
+    height: auto;
+}
+
+/* 화면 전체 딤 */
+.event-dim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .55);
+    backdrop-filter: blur(2px);
+    z-index: 9990;
+}
+
+/* 중앙 확대 팝업 */
+.letter-pop {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    z-index: 10000;
+    pointer-events: none;
+    /* 안쪽만 클릭되게 */
+}
+
+.letter-pop__frame {
+    position: relative;
+    width: min(520px, 86vw);
+    /* 👉 크기 조절 */
+    margin: 0;
+    transform: translateY(-4px) scale(1);
+    animation: popIn .28s ease-out both;
+    pointer-events: auto;
+    /* 버튼 클릭 가능 */
+}
+
+@keyframes popIn {
+    from {
+        transform: translateY(10px) scale(.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(-4px) scale(1);
+        opacity: 1;
+    }
+}
+
+.letter-pop__img {
+    display: block;
+    width: 80%;
+    height: auto;
+    filter: drop-shadow(0 18px 40px rgba(0, 0, 0, .28));
+    margin: 0 auto;
+}
+
+
+
+.a_event_title {
+    margin: 0 auto;
+    width: 50%;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100px;
+    background-color: #06301A;
+}
+
+.a_event_title p {
+    font-family: "Playfair Display", serif;
+    text-align: center;
+    color: #fff;
+    font-size: 24px;
+    font-weight: 400;
+}
+
+/* .a_event_buttons {
+    width: 450px;
+    margin: 0 auto;
+    margin-bottom: 50px;
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    justify-content: center;
+}
+
+.a_event_buttons button {
+    flex: 1;
+    border-radius: 10px;
+    height: 60px;
+    color: #fff;
+    font-size: 18px;
+    font-family: "NanumSquareRound", serif;
+}
+
+.a_event_buttons .a_event_button1 {
+    background-color: #5E472F;
+}
+
+.a_event_buttons .a_event_button2 {
+    background-color: #06301A;
+} */
+
+/* 모달 내부 버튼 영역 */
+.letter-pop__actions {
+    display: flex;
+    margin: 0 auto;
+    margin-top: 30px;
+    justify-content: center;
+    gap: 30px;
+}
+
+.letter-pop__btn {
+    min-width: 170px;
+    height: 54px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 18px;
+    font-family: "NanumSquareRound", serif;
+    cursor: pointer;
+}
+
+.btn-brown {
+    background: #5E472F;
+}
+
+.btn-green {
+    background: #06301A;
+}
+
+.btn-brown:hover {
+    background: #9A8872
+}
+
+.btn-green:hover {
+    background: #93A07E;
+}
+
+
+
+
+/* 모달 열리면 배경의 하단 버튼은 숨김 */
+.event-open .a_event_buttons {
+    visibility: hidden;
+    /* 또는 display:none; */
+}
+
+/* 반응형(선택) */
+@media (max-width: 480px) {
+    .letter-pop__btn {
+        min-width: 140px;
+        height: 50px;
+        font-size: 15px;
+    }
+}
+
+.letter-pop__frame {
+    position: relative;
+    overflow: visible;
+}
+
+
+
+.a_event_mainbox.is-win .letter-pop__frame {
+    animation:
+        popIn 0.9s cubic-bezier(.2, .8, .2, 1) both,
+        win-bounce 1.3s cubic-bezier(.22, 1.28, .25, 1) .25s both;
+}
+
+@keyframes popIn {
+    from {
+        transform: translateY(8px) scale(.94);
+        opacity: 0;
+    }
+
+    60% {
+        transform: translateY(-4px) scale(1.06);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* 모달 큰 편지 살짝 흔들림 */
+.a_event_mainbox.is-lose .letter-pop__frame {
+    animation: popIn .5s ease-out both, lose-shake .9s cubic-bezier(.36, .07, .19, .97) .2s both;
+}
+
+/* 빨간 링이 번지듯 한번 나타났다 사라짐 */
+.a_event_mainbox.is-lose .letter-pop__frame::before {
+    content: "";
+    position: absolute;
+    inset: -10px;
+    border-radius: 16px;
+    box-shadow: 0 0 0 0 rgba(220, 60, 60, .45);
+    pointer-events: none;
+    animation: ring-flash .6s ease-out .2s both;
+}
+
+@keyframes lose-shake {
+    0% {
+        transform: translateY(-4px) rotate(0deg) scale(1);
+    }
+
+    20% {
+        transform: translateY(-2px) rotate(1.5deg) scale(.99);
+    }
+
+    40% {
+        transform: translateY(-3px) rotate(-1.2deg) scale(.99);
+    }
+
+    60% {
+        transform: translateY(-2px) rotate(.8deg) scale(1);
+    }
+
+    80% {
+        transform: translateY(-3px) rotate(-.5deg) scale(1);
+    }
+
+    100% {
+        transform: translateY(-4px) rotate(0deg) scale(1);
+    }
+}
+
+
+/* (선택) 리본 문구 스타일 */
+.lose-ribbon {
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-3deg);
+    background: #5e472f;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .18);
+}
+
+/* 이미 참여했거나(locked) 결제 토큰 없으면(eligible=false) 클릭 막기 + 톤다운 */
+.event-locked .letters,
+.letters.disabled {
+    pointer-events: none;
+    filter: grayscale(35%) opacity(.85);
+}
+
+.event-locked .letter {
+    cursor: not-allowed;
+}
+
+/* 안내 배너 */
+.already-msg {
+    max-width: 680px;
+    margin: 0 auto 18px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, .08);
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-align: center;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, .06);
+}
+
+.already-btn {
+    margin-left: 10px;
+    height: 40px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 10px;
+    background: #06301A;
+    color: #fff;
+    cursor: pointer;
+}

@@ -1,0 +1,45 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "brand": "뚜뚜아트",
+      "title": "감성 목마 원목 말 흔들 목마 우드 오브제",
+      "color": "brown",
+      "size": "small",
+      "unitPrice": "95000 원",
+      "qty": 1,
+      "orderNo": "8975648",
+      "image": "https://00anuyh.github.io/SouvenirImg/cartitem1.png",
+      "deliveryCost": 0,
+      "status": [
+        "결제완료",
+        "2025-08-11",
+        "배송준비중",
+        "2025-08-12(화) 이내 배송 시작"
+      ]
+    },
+    {
+      "id": 2,
+      "brand": "뚜뚜아트",
+      "title": "감성 목마 원목 말 흔들 목마 우드 오브제",
+      "color": "brown",
+      "size": "small",
+      "unitPrice": "95000 원",
+      "qty": 1,
+      "orderNo": "8975648",
+      "image": "https://00anuyh.github.io/SouvenirImg/cartitem2.png",
+      "deliveryCost": 0,
+      "status": [
+        "결제완료",
+        "2025-08-11",
+        "배송준비중",
+        "2025-08-12(화) 이내 배송 시작"
+      ]
+    }
+  ],
+  "receiver": "전유정",
+  "zip": "65189",
+  "address": "경기도 안산시 EZEN_Academy 505호",
+  "phone": "010 - 1234 - 1234",
+  "request": "문 앞에 놔주세요."
+}

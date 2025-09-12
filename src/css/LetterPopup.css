@@ -1,0 +1,169 @@
+:root {
+    --lp-green: #06301a;
+    --lp-brown: #5e472f;
+}
+
+/* Overlay */
+.LetterPopup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .35);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+    animation: LetterPopup-fade .18s ease-out;
+}
+
+@keyframes LetterPopup-fade {
+    from {
+        opacity: 0
+    }
+
+    to {
+        opacity: 1
+    }
+}
+
+/* Card */
+.LetterPopup-modal {
+    position: relative;
+    width: min(380px, 92vw);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .25), 0 0 0 1px rgba(0, 0, 0, .06);
+    padding: 24px 30px;
+    text-align: center;
+    transform: translateY(0);
+    animation: LetterPopup-pop .18s ease-out;
+}
+
+@keyframes LetterPopup-pop {
+    from {
+        transform: translateY(6px);
+        opacity: 0
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1
+    }
+}
+
+/* Close */
+.LetterPopup-close {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: 0;
+    background: transparent;
+    color: var(--lp-brown);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.LetterPopup-close:hover {
+    opacity: .8
+}
+
+/* Title / Subtitle */
+.LetterPopup-title {
+    font-family: NanumSquareRound, system-ui;
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--lp-brown);
+    margin: 6px 0 16px;
+    line-height: 1.2;
+    /* ← 수정 */
+}
+
+.LetterPopup-subtitle {
+    font-family: NanumSquareRound, system-ui;
+    font-size: 14px;
+    color: #454545;
+    margin: 0 0 12px;
+}
+
+/* Hero: 부모 = hover scale */
+.LetterPopup-hero {
+    width: 250px;
+    height: 200px;
+    margin: 6px auto 14px;
+    display: block;
+    cursor: pointer;
+    transition: transform .25s ease;
+}
+
+.LetterPopup-hero:hover {
+    transform: scale(1.08)
+}
+
+/* Hero: 자식 = background + breathe */
+.LetterPopup-heroImg {
+    width: 100%;
+    height: 100%;
+    background: url("https://00anuyh.github.io/SouvenirImg/mailbox.png") center/cover no-repeat;
+    /* 경로 체크 */
+    animation: breathe .8s ease-in-out infinite;
+}
+
+/* 한 번만 선언 */
+@keyframes breathe {
+
+    0%,
+    100% {
+        transform: translateY(0)
+    }
+
+    50% {
+        transform: translateY(-2px)
+    }
+}
+
+/* Buttons */
+.LetterPopup-btnRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.LetterPopup-btn {
+    height: 42px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: NanumSquareRound, system-ui;
+    font-size: 15px;
+    border: 1px solid transparent;
+    transition: transform .04s ease, filter .15s ease;
+}
+
+.LetterPopup-btn:active {
+    transform: translateY(1px)
+}
+
+.LetterPopup-btnClose {
+    background: var(--lp-brown);
+    color: #fff;
+    border-color: var(--lp-brown);
+}
+
+.LetterPopup-btnClose:hover {
+    filter: brightness(1.05)
+}
+
+.LetterPopup-btnPrimary {
+    background: var(--lp-green);
+    color: #fff;
+    border-color: var(--lp-green);
+}
+
+.LetterPopup-btnPrimary:hover {
+    filter: brightness(1.05)
+}
