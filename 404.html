@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Redirecting…</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+        (function () {
+            var l = window.location;
+            // /username.github.io/REPO/... → /username.github.io/REPO/?p=/REPO/...
+            var repoBase = l.pathname.split('/').slice(0, 2).join('/'); // "" or "/REPO"
+            var newUrl =
+                l.protocol + '//' + l.host + repoBase + '/index.html?p=' +
+                encodeURIComponent(l.pathname + l.search + l.hash);
+            l.replace(newUrl);
+        })();
+    </script>
+</head>
+
+<body>Redirecting…</body>
+
+</html>
