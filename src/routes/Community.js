@@ -296,126 +296,128 @@ export default function Community() {
   console.log("[News] NEWS_PROXY =", NEWS_PROXY);
 
   useEffect(() => {
-  if (!NEWS_PROXY) {
-    setNewsLoading(false);
-    setNewsError("뉴스 프록시 주소가 설정되지 않았습니다. .env의 REACT_APP_NEWS_PROXY를 확인하세요.");
-    return;
-  }
-  if (fetchedRef.current) return; // 중복 방지
-  fetchedRef.current = true;
-
-  // 1) 캐시 확인
-  try {
-    const raw = localStorage.getItem(NEWS_CACHE_KEY);
-    if (raw) {
-      const { at, slides: cached } = JSON.parse(raw);
-      if (Date.now() - at < NEWS_CACHE_TTL && Array.isArray(cached) && cached.length) {
-        setSlides(cached);
-        setNewsLoading(false);
-        return;
-      }
-    }
-  } catch {}
-
-  const KEYWORDS = [
-    "interior design","home decor","interior trends","modern interior","minimalist home",
-    "small objects","home accessories","ceramic vase","scented candle","table lamp",
-    "artisan craft","decorative objects","인테리어 소품","오브제","도자 화병","캔들","테이블 램프","아기자기 소품"
-  ];
-
-  const buildSingleQuery = (keywords, maxLen = 480) => {
-    let cur = "";
-    for (const kw of keywords) {
-      const next = cur ? `${cur} OR ${kw}` : kw;
-      if (next.length > maxLen) break;
-      cur = next;
-    }
-    return cur || "interior design";
-  };
-
-  const toSlides = (articles = []) =>
-    articles.map((a) => ({
-      img: a.urlToImage || "https://via.placeholder.com/620x311?text=No+Image",
-      source: a.source?.name || "뉴스",
-      time: new Date(a.publishedAt || Date.now()).toLocaleString("ko-KR", {
-        month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
-      }),
-      title: a.title || "",
-      url: a.url,
-      likes: Math.floor(Math.random() * 10),
-      comments: Math.floor(Math.random() * 5),
-    }));
-
-  const dedupeByUrl = (arr) => {
-    const seen = new Set();
-    return arr.filter((a) => {
-      const key = a.url || a.title;
-      if (!key || seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-  };
-
-  // ✅ 안전한 요청 함수
-  const fetchOnce = async (
-    lang,
-    { fromDays = 14, pageSize = 12, searchIn = "title,description" } = {}
-  ) => {
-    // 절대 URL 검증(빈값/공백/상대경로 방지)
-    if (!/^https?:\/\//i.test(NEWS_PROXY)) {
-      throw new Error("NEWS_PROXY invalid: " + (NEWS_PROXY || "<empty>"));
-    }
-    const u = new URL(NEWS_PROXY);
-    u.searchParams.set("q", buildSingleQuery(KEYWORDS));
-    if (lang) u.searchParams.set("lang", lang);
-    u.searchParams.set("fromDays", String(fromDays));
-    u.searchParams.set("pageSize", String(pageSize));
-    if (searchIn) u.searchParams.set("searchIn", searchIn);
-
-    const res = await fetch(u.toString(), { cache: "no-store" });
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
-    }
-    return res.json();
-  };
-
-  const run = async () => {
-    setNewsLoading(true);
-    setNewsError("");
-    try {
-      // 단계적 폴백: ko → en → 기간 확장 → 언어 제한 해제 → 제목 위주
-      let articles = (await fetchOnce("ko")).articles || [];
-      if (articles.length < 5) articles = articles.concat((await fetchOnce("en")).articles || []);
-      if (articles.length < 5) articles = articles.concat((await fetchOnce("en", { fromDays: 30 })).articles || []);
-      if (articles.length < 5) articles = articles.concat((await fetchOnce("", { fromDays: 30 })).articles || []);
-      if (articles.length < 5) articles = articles.concat((await fetchOnce("", { fromDays: 30, searchIn: "title" })).articles || []);
-
-      const cleaned = dedupeByUrl(articles)
-        .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))
-        .slice(0, 8);
-
-      const slidesData = toSlides(cleaned);
-      setSlides(slidesData);
-
-      // 캐시 저장
-      try {
-        localStorage.setItem(
-          NEWS_CACHE_KEY,
-          JSON.stringify({ at: Date.now(), slides: slidesData })
-        );
-      } catch {}
-    } catch (e) {
-      console.error("[News] failed:", e);
-      setNewsError(`뉴스 로딩 실패: ${e.message}`);
-      setSlides([]);
-    } finally {
+    if (!NEWS_PROXY) {
       setNewsLoading(false);
+      setNewsError("뉴스 프록시 주소가 설정되지 않았습니다. .env의 REACT_APP_NEWS_PROXY를 확인하세요.");
+      return;
     }
-  };
+    if (fetchedRef.current) return; // 중복 방지
+    fetchedRef.current = true;
 
-  run();
-}, [NEWS_PROXY]);
+    // 1) 캐시 확인
+    try {
+      const raw = localStorage.getItem(NEWS_CACHE_KEY);
+      if (raw) {
+        const { at, slides: cached } = JSON.parse(raw);
+        if (Date.now() - at < NEWS_CACHE_TTL && Array.isArray(cached) && cached.length) {
+          setSlides(cached);
+          setNewsLoading(false);
+          return;
+        }
+      }
+    } catch {}
+
+    const KEYWORDS = [
+      "interior design","home decor","interior trends","modern interior","minimalist home",
+      "small objects","home accessories","ceramic vase","scented candle","table lamp",
+      "artisan craft","decorative objects","Retro Mood","Colorful Interior","Various Materials","Natural Elements","Personalized Styling","Statement Objects"
+    ];
+
+    const buildSingleQuery = (keywords, maxLen = 480) => {
+      let cur = "";
+      for (const kw of keywords) {
+        const next = cur ? `${cur} OR ${kw}` : kw;
+        if (next.length > maxLen) break;
+        cur = next;
+      }
+      return cur || "interior design";
+    };
+
+    const toSlides = (articles = []) =>
+      articles.map((a) => ({
+        img: a.urlToImage || "https://via.placeholder.com/620x311?text=No+Image",
+        source: a.source?.name || "뉴스",
+        time: new Date(a.publishedAt || Date.now()).toLocaleString("ko-KR", {
+          month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+        }),
+        title: a.title || "",
+        url: a.url,
+        likes: Math.floor(Math.random() * 10),
+        comments: Math.floor(Math.random() * 5),
+      }));
+
+    const dedupeByUrl = (arr) => {
+      const seen = new Set();
+      return arr.filter((a) => {
+        const key = a.url || a.title;
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    };
+
+    // ✅ 안전한 요청 함수
+    const fetchOnce = async (
+      lang,
+      { fromDays = 14, pageSize = 12, searchIn = "title,description" } = {}
+    ) => {
+      // 절대 URL 검증(빈값/공백/상대경로 방지)
+      if (!/^https?:\/\//i.test(NEWS_PROXY)) {
+        throw new Error("NEWS_PROXY invalid: " + (NEWS_PROXY || "<empty>"));
+      }
+      const u = new URL(NEWS_PROXY);
+      u.searchParams.set("q", buildSingleQuery(KEYWORDS));
+      if (lang) u.searchParams.set("lang", lang);
+      u.searchParams.set("fromDays", String(fromDays));
+      u.searchParams.set("pageSize", String(pageSize));
+      if (searchIn) u.searchParams.set("searchIn", searchIn);
+
+      const res = await fetch(u.toString(), { cache: "no-store", mode: "cors", credentials: "omit" });
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
+      }
+      return res.json();
+    };
+
+    const run = async () => {
+      setNewsLoading(true);
+      setNewsError("");
+      try {
+        // 단계적 폴백: ko → en → 기간 확장 → 언어 제한 해제 → 제목 위주
+        let articles = (await fetchOnce("ko")).articles || [];
+        if (articles.length < 5) articles = articles.concat((await fetchOnce("en")).articles || []);
+        if (articles.length < 5) articles = articles.concat((await fetchOnce("en", { fromDays: 30 })).articles || []);
+        if (articles.length < 5) articles = articles.concat((await fetchOnce("", { fromDays: 30 })).articles || []);
+        if (articles.length < 5) articles = articles.concat((await fetchOnce("", { fromDays: 30, searchIn: "title" })).articles || []);
+
+        const cleaned = dedupeByUrl(articles)
+          .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))
+          .slice(0, 8);
+
+        const slidesData = toSlides(cleaned);
+        setSlides(slidesData);
+
+        // 캐시 저장
+        try {
+          localStorage.setItem(
+            NEWS_CACHE_KEY,
+            JSON.stringify({ at: Date.now(), slides: slidesData })
+          );
+        } catch {}
+      } catch (e) {
+        console.error("[News] failed:", e);
+        const msg = String(e).includes("Failed to fetch")
+          ? "네트워크/CORS 문제로 요청이 차단되었습니다. Render의 CORS_ORIGIN과 로컬 환경변수를 확인하세요."
+          : `뉴스 로딩 실패: ${e.message}`;
+        setNewsError(msg);
+        setSlides([]);
+      } finally {
+        setNewsLoading(false);
+      }
+    };
+    run();
+  }, [NEWS_PROXY]);
 
   const totalSlides = slides.length;
   const nextSlide = useCallback(() => {
