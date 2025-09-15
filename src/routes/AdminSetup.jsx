@@ -1,14 +1,9 @@
 // src/routes/AdminSetup.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAdminAuth } from "../context/AdminAuthContext";
-
+// AdminSetup에서는 실제 로그인(세션 생성)하지 않습니다.
 export default function AdminSetup() {
   const nav = useNavigate();
-
-  const auth = useAdminAuth();
-  const login = auth?.login;
-  const admin = auth?.admin;
 
   const [email, setEmail] = useState("33han@souvenir.com");
   const [password, setPassword] = useState("33han");
@@ -18,29 +13,21 @@ export default function AdminSetup() {
 
   useEffect(() => { emailRef.current?.focus(); }, []);
 
-  if (!auth) {
-    return (
-      <div style={{maxWidth:"1440px",display:"flex",justifyContent:"center",alignItems:"center",flexDirection:"column",gap:"20px",margin:"50px auto"}}>
-        <h2>관리자 로그인</h2>
-        <p style={{ color: "#b00020" }}>
-          내부 설정 필요: <code>AdminAuthProvider</code>로 앱을 감싸주세요.
-        </p>
-      </div>
-    );
-  }
-
   const onSubmit = async (e) => {
     e.preventDefault();
     setMsg(""); setLoading(true);
     try {
+      // 여기서는 계정 “생성 완료”만 안내하고, 실제 로그인은 Login 페이지의 모달에서 진행
       const normEmail = String(email).trim().toLowerCase();
-      await login?.(normEmail, String(password));
-      setMsg("로그인 성공");
-      nav("/admin");
+
+      // TODO: 별도의 생성 API가 있다면 여기서 호출
+      // await fetch('/api/admin/create', { ... })
+
+      setMsg("생성이 완료되었습니다. 로그인 페이지에서 관리자 로그인을 진행해 주세요.");
+      // ✅ Login 페이지로 이동하면서, 모달에서 사용할 프리셋(이메일/플래그) 전달
+      nav("/Login", { state: { adminReady: true, adminEmail: normEmail } });
     } catch (err) {
-      const m = err?.message === "INVALID_CREDENTIALS"
-        ? "이메일 또는 비밀번호가 올바르지 않습니다."
-        : err?.message || "로그인에 실패했습니다.";
+      const m = err?.message || "생성에 실패했습니다.";
       setMsg(m);
     } finally {
       setLoading(false);
@@ -49,8 +36,10 @@ export default function AdminSetup() {
 
   return (
     <div style={{maxWidth:"1440px",display:"flex",justifyContent:"center",alignItems:"center",flexDirection:"column",gap:"20px",margin:"50px auto"}}>
-      <h2>관리자 로그인</h2>
-      {!admin && <p style={{ fontSize: 15, color: "#2a2a2a" }}>관리자는 이메일과 비밀번호로 로그인하세요.</p>}
+      <h2>관리자 생성하기</h2>
+      <p style={{ fontSize: 15, color: "#2a2a2a" }}>
+        관리자를 이메일/비밀번호로 생성한 뒤, 로그인 페이지에서 <b>관리자 로그인</b> 버튼으로 로그인하세요.
+      </p>
       <form onSubmit={onSubmit} style={{ display: "grid", gap: 20 }}>
         <input
           ref={emailRef}
@@ -68,14 +57,18 @@ export default function AdminSetup() {
           placeholder="비밀번호"
           type="password"
           required
-          autoComplete="current-password"
+          autoComplete="new-password"
           style={{ background: "#FFFADF", padding: "10px 30px", fontSize: 16 }}
         />
         <button type="submit" disabled={loading}>
-          {loading ? "로그인 중…" : "로그인"}
+          {loading ? "생성 중…" : "생성하기"}
         </button>
       </form>
-      {msg && <p style={{ marginTop: 15, color: msg.includes("성공") ? "#2a7a2a" : "#b00020" }}>{msg}</p>}
+      {msg && (
+        <p style={{ marginTop: 15, color: msg.includes("완료") ? "#2a7a2a" : "#b00020" }}>
+          {msg}
+        </p>
+      )}
     </div>
   );
 }
