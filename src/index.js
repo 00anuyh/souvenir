@@ -20,8 +20,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <FavProvider>
       <BrowserRouter basename={basename}>
         <AdminAuthProvider>
-        <App />
-      </AdminAuthProvider>
+          <App />
+        </AdminAuthProvider>
       </BrowserRouter>
     </FavProvider>
   </AuthProvider>

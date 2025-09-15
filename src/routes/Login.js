@@ -1,13 +1,14 @@
 // src/routes/Login.js
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useAdminAuth } from "../context/AdminAuthContext";
-import { Link } from "react-router-dom";
+
+// ⛔ 과거 로컬 관리자 로직 제거: anyAdminExists 사용 안 함
+// import { anyAdminExists } from "../utils/userStore";
 
 import SignupModal from "../components/SignupModal";
 import SocialLogin from "../components/SocialLogin";
-import { anyAdminExists } from "../utils/userStore";
 
 import "../css/login.css";
 
@@ -24,6 +25,7 @@ export default function Login() {
   const [aID, setAID] = useState("");
   const [aPw, setAPw] = useState("");
   const [aErr, setAErr] = useState("");
+  const [aLoading, setALoading] = useState(false);
 
   // AdminSetup에서 돌아온 경우: 이메일 프리필 + 세션 플래그 저장 (배너 없음)
   useEffect(() => {
@@ -36,25 +38,16 @@ export default function Login() {
     }
   }, [location.state]);
 
-  // 관리자 로그인 버튼: AdminSetup 직후면 anyAdminExists 체크 건너뛰고 바로 모달 오픈
+  // ✅ 관리자 로그인 버튼: 과거 anyAdminExists 체크 제거, 모달만 연다
   const openAdminLogin = () => {
-    const ready = sessionStorage.getItem("admin_ready") === "1";
-    if (ready) {
-      setAdminOpen(true);
-      return;
-    }
-    if (!anyAdminExists()) {
-      const go = window.confirm("등록된 관리자가 없습니다. 관리자 생성 페이지로 이동할까요?");
-      if (go) navigate("/admin-setup");
-      return;
-    }
     setAdminOpen(true);
   };
 
-  // 관리자 로그인 (서버 /api/admin/login 경유)
+  // ✅ 관리자 로그인 (서버 /api/admin/login 경유)
   const doAdminLogin = async (e) => {
     e.preventDefault();
     setAErr("");
+    setALoading(true);
     try {
       const email = aID.trim().toLowerCase();
       await adminLogin(email, aPw);
@@ -70,6 +63,8 @@ export default function Login() {
           ? "이메일 또는 비밀번호가 올바르지 않습니다."
           : err?.message || "로그인 실패";
       setAErr(m);
+    } finally {
+      setALoading(false);
     }
   };
 
@@ -210,8 +205,8 @@ export default function Login() {
                   >
                     취소
                   </button>
-                  <button type="submit" style={{ fontFamily: "NanumSquareRound" }}>
-                    로그인
+                  <button type="submit" disabled={aLoading} style={{ fontFamily: "NanumSquareRound" }}>
+                    {aLoading ? "로그인 중…" : "로그인"}
                   </button>
                 </div>
               </form>
