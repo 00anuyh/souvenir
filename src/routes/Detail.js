@@ -19,6 +19,7 @@ import { GoPlus } from "react-icons/go";
 import catalog from "../data/detailData.json";
 import { NavLink, useParams, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useAdminAuth } from "../context/AdminAuthContext"; // ★ 추가
 import Search from "../components/Search.js";
 import KakaoMap from "../components/KakaoMap";
 import { getProfilePic, setProfilePic as saveProfilePic } from "../utils/profilePic.js";
@@ -64,14 +65,25 @@ async function compressToDataURL(file, size = 96) {
 export default function Detail() {
   // ---------- Auth ----------
   const { isLoggedIn, logoutAll, user, isAdmin: isAdminFn } = useAuth();
+  const { admin, logout: adminLogout } = useAdminAuth() || {}; // ★ 서버 관리자 세션
   const navigate = useNavigate();
+
+  // 기존 로컬로그인 판단
+  const isAuthedLocal = !!isLoggedIn?.local;
+  // ★ 로컬 or 관리자 — 리뷰 작성/표시 공통 허용 기준
+  const isAnyAuthed = isAuthedLocal || !!admin;
+
+  // 헤더의 로그아웃(필요 시 관리자 로그아웃까지)
   const handleLogout = async () => {
-    await logoutAll();
+    try {
+      await logoutAll();
+    } finally {
+      try { await adminLogout?.(); } catch {}
+    }
     navigate("/", { replace: true });
   };
-  const isAuthed = !!isLoggedIn?.local;
 
-  // ✅ 관리자 여부
+  // ✅ 관리자 여부(리뷰 삭제/숨김 권한에 사용)
   const isAdmin = useMemo(() => {
     try {
       if (typeof isAdminFn === "function") return !!isAdminFn();
@@ -80,9 +92,15 @@ export default function Detail() {
       user?.role === "admin" ||
       user?.isAdmin === true ||
       isLoggedIn?.role === "admin" ||
-      isLoggedIn?.admin === true
+      isLoggedIn?.admin === true ||
+      !!admin
     );
-  }, [isAdminFn, user, isLoggedIn]);
+  }, [isAdminFn, user, isLoggedIn, admin]);
+
+  // 리뷰 폼에서 표시할 이름
+  const displayName = admin
+    ? `${(admin.email?.split("@")[0] ?? "관리자")}님`
+    : (isLoggedIn?.local ? `${user?.name}님` : "회원님");
 
   // ---------- Refs ----------
   const headerRef = useRef(null);
@@ -145,12 +163,12 @@ export default function Detail() {
   }, [uid]);
 
   const onPickAvatar = () => {
-    if (!isAuthed) return;
+    if (!isAuthedLocal) return; // 아바타 변경은 로컬로그인에게만 (원래 정책 유지)
     fileRef.current?.click();
   };
   const onChangeAvatar = async (e) => {
     const f = e.target.files?.[0];
-    if (!isAuthed || !uid || !f) return;
+    if (!isAuthedLocal || !uid || !f) return;
     const dataUrl = await compressToDataURL(f, 96);
     setProfilePic(dataUrl);
     saveProfilePic(uid, dataUrl);
@@ -507,7 +525,7 @@ export default function Detail() {
     reader.readAsDataURL(f);
   }, []);
 
-  // 리뷰 모달 열기(읽기)
+  // 리뷰 읽기 모달 열기
   const openReviewModalFromData = useCallback((rv) => {
     const isOwner = rv._kind === "user" && rv.authorId === authorId;
     const latest = rv._kind === "user" && rv.authorId ? getProfilePic(rv.authorId) : "";
@@ -527,7 +545,7 @@ export default function Detail() {
 
   // 리뷰 등록
   const submitReview = useCallback(() => {
-    if (!isAuthed) {
+    if (!isAnyAuthed) {
       alert("로그인 후 리뷰를 작성할 수 있어요.");
       return;
     }
@@ -542,7 +560,7 @@ export default function Detail() {
     const starsStr = "★★★★★".slice(0, rating) + "☆☆☆☆☆".slice(0, 5 - rating);
     const picAtWrite = (profilePic ?? getProfilePic(uid) ?? "");
     const review = {
-      name: isLoggedIn?.local ? `${user?.name}님` : "회원님",
+      name: displayName,
       stars: starsStr,
       score: `${rating}.0`,
       excerpt: rvText.trim(),
@@ -550,8 +568,7 @@ export default function Detail() {
       rating,
       createdAt: new Date().toISOString(),
       authorId,              // ← 작성자 식별 저장
-      authorPic: picAtWrite,      // ← 스냅샷 확실히 저장
-
+      authorPic: picAtWrite, // ← 스냅샷
     };
     const next = addReviewFor(productKey, review);
     setUserReviews(next);
@@ -567,7 +584,17 @@ export default function Detail() {
     setHover(0);
 
     alert("리뷰가 등록되었습니다.");
-  }, [isAuthed, rating, rvText, rvPhoto, isLoggedIn?.local, user?.name, authorId, profilePic, productKey, uid]);
+  }, [
+    isAnyAuthed,
+    rating,
+    rvText,
+    rvPhoto,
+    displayName,
+    authorId,
+    profilePic,
+    productKey,
+    uid,
+  ]);
 
   // 표시용(내장 + 사용자) + 정렬/필터 (+관리자 숨김 반영)
   const displayReviews = useMemo(() => {
@@ -670,9 +697,7 @@ export default function Detail() {
       alert("후기는 최소 10자 이상 작성해주세요.");
       return;
     }
-    const starsStr = "★★★★★".slice(0, rating) + "☆☆☆☆☆".slice(0, 5 - rating);
-    // ⬇⬇ 작성 순간 스냅샷 확보 (state가 비어있어도 UID 기반으로 확보)
-    const picAtWrite = (profilePic ?? getProfilePic(uid) ?? "");
+    const starsStr = "★★★★★".slice(0, r) + "☆☆☆☆☆".slice(0, 5 - r);
     const next = updateReviewFor(
       productKey,
       id,
@@ -802,7 +827,7 @@ export default function Detail() {
             <IoCartOutline />
           </NavLink>
 
-          {isAuthed ? (
+          {(isAuthedLocal || admin) ? (
             <button
               type="button"
               className="login_btn"
@@ -830,7 +855,7 @@ export default function Detail() {
         <ul id="detail-menu1">
           <li className="hamprofile">
             <p>
-              <span>{isLoggedIn?.local ? `${user?.name}님` : "회원님"}</span>
+              <span>{isLoggedIn?.local ? `${user?.name}님` : (admin ? `${(admin.email?.split("@")[0] ?? "관리자")}님` : "회원님")}</span>
             </p>
             <p>
               적립금 <span>{points} p</span>
@@ -972,12 +997,12 @@ export default function Detail() {
               >
                 <div className="rv-top">
                   <div
-                    className={`rv-avatar lg ${profilePic ? "has-img" : "is-empty"} ${isAuthed ? "can-edit" : ""}`}
+                    className={`rv-avatar lg ${profilePic ? "has-img" : "is-empty"} ${isAuthedLocal ? "can-edit" : ""}`}
                     style={profilePic ? { backgroundImage: `url(${profilePic})` } : undefined}
-                    onClick={isAuthed ? onPickAvatar : undefined}
-                    title={isAuthed ? "프로필 사진 변경" : "로그인 후 변경 가능"}
+                    onClick={isAuthedLocal ? onPickAvatar : undefined}
+                    title={isAuthedLocal ? "프로필 사진 변경" : "로그인 후 변경 가능"}
                     aria-hidden="true"
-                    aria-disabled={!isAuthed}
+                    aria-disabled={!isAuthedLocal}
                   />
                   <input
                     type="file"
@@ -985,10 +1010,10 @@ export default function Detail() {
                     ref={fileRef}
                     onChange={onChangeAvatar}
                     hidden
-                    disabled={!isAuthed}
+                    disabled={!isAuthedLocal}
                   />
                   <div className="rv-meta">
-                    <p className="rv-nick">{isLoggedIn?.local ? `${user?.name}님` : "회원님"}</p>
+                    <p className="rv-nick">{displayName}</p>
 
                     {/* ⭐ 별점 입력 */}
                     <div className="rv-stars" role="radiogroup" aria-label="별점 선택">
@@ -1051,7 +1076,7 @@ export default function Detail() {
                 <button
                   className="rv-submit"
                   type="submit"
-                  title={isAuthed ? "리뷰 등록" : "로그인 후 작성 가능"}
+                  title={isAnyAuthed ? "리뷰 등록" : "로그인 후 작성 가능"}
                 >
                   등록하기
                 </button>
@@ -1307,7 +1332,7 @@ export default function Detail() {
           }}
         >
           <div className="rve-nick" id="rve-title">
-            {isLoggedIn?.local ? `${user?.name}님` : "회원님"}
+            {displayName}
           </div>
           <button
             type="button"

@@ -1,4 +1,4 @@
-// src/routes/MainPage.js (또는 src/pages/MainPage.jsx 프로젝트 경로에 맞게)
+// src/routes/MainPage.js
 import React, { memo, useRef, useEffect, useState, useMemo, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -16,6 +16,7 @@ import { useAuth } from "../context/AuthContext";
 import { useFavs } from "../context/FavContext";
 import WeatherCard from "../components/WeatherCard";
 import { addToCart, parsePriceKRW } from "../utils/cart";
+import { useAdminAuth } from "../context/AdminAuthContext";
 
 /* Icons */
 import { TiArrowRightThick } from "react-icons/ti";
@@ -64,13 +65,21 @@ const Banner = memo(function Banner() {
 
 const MyInfo = memo(function MyInfo() {
   const { isLoggedIn, user } = useAuth();
+  // ✅ 훅을 컴포넌트 내부에서 호출
+  const { admin, checking } = useAdminAuth() || {};
+
   return (
     <div className="myinpo">
       <div className="myinpotop">
         <WeatherCard lat={37.5665} lon={126.978} />
         <p>
           <span className="main_nickname">
-            {isLoggedIn?.local ? `${user?.name}님 반갑습니다` : "로그인 후 이용 해 주세요."}
+            {admin
+              ? `${(admin.email?.split("@")[0] ?? "관리자")}님 반갑습니다`
+              : (isLoggedIn?.local
+                  ? `${user?.name}님 반갑습니다`
+                  : "로그인 후 이용 해 주세요.")
+            }
           </span>{" "}
         </p>
       </div>
@@ -153,7 +162,6 @@ const EditorsPick = memo(function EditorsPick() {
 
 /* ----------------------------- BEST GRID ----------------------------- */
 
-
 const BestGrid = memo(function BestGrid({ products: raw = [] }) {
   const SHOWING = 5;
   const navigate = useNavigate();
@@ -167,9 +175,6 @@ const BestGrid = memo(function BestGrid({ products: raw = [] }) {
     return list.map((it, idx) => {
       const slug = String(it.id ?? String(idx + 1));
 
-      // 1순위: gallery[0] 절대 URL이면 그대로 사용
-      // 2순위: gallery[0] 상대경로면 CDN 붙이기
-      // 3순위: 없으면 Best_img1~5.png 순환 폴백
       const first = it.gallery?.[0];
       const img = first
         ? (/^https?:\/\//i.test(first)
@@ -181,7 +186,7 @@ const BestGrid = memo(function BestGrid({ products: raw = [] }) {
         id: slug,
         slug,
         name: it.product?.name ?? "",
-        price: it.product?.price ?? "", // "₩36,000" 같은 문자열 허용
+        price: it.product?.price ?? "",
         image: img,
         soldout: Boolean(it.soldout ?? it.product?.soldout),
       };
@@ -236,7 +241,6 @@ const BestGrid = memo(function BestGrid({ products: raw = [] }) {
     },
     []
   );
-
 
   return (
     <>
@@ -305,7 +309,6 @@ const BestGrid = memo(function BestGrid({ products: raw = [] }) {
 
       <div className="sec2more">
         <Link to="/best">
-          {/* 실제 파일 위치에 맞게 수정: img/ 하위라면 `${CDN}img/more.png` */}
           <img src="https://00anuyh.github.io/SouvenirImg/more.png" alt="더보기" />
           <div className="sec2Arrow">
             <img src="https://00anuyh.github.io/SouvenirImg/Vector.png" alt="더보기" />
@@ -372,7 +375,6 @@ const BestGrid = memo(function BestGrid({ products: raw = [] }) {
 /* ----------------------------- Community / EndHero ----------------------------- */
 
 const CommunitySwiper = memo(function CommunitySwiper() {
-  // Community.jsx 와 동일한 키/도구들
   const STORAGE_KEY = "communityPosts";
   const HIDE_KEY = "communityAdminHidden";
 
@@ -397,7 +399,6 @@ const CommunitySwiper = memo(function CommunitySwiper() {
         img: p.image || (p.photos?.[0] ?? ""),
       }))}`;
 
-  // 슬라이드 소스 만들기: 로컬 + 시드 → 숨김 제외 → 최신순 → 상위 N
   const [slides, setSlides] = useState([]);
 
   const buildSlides = useCallback(() => {
@@ -406,14 +407,12 @@ const CommunitySwiper = memo(function CommunitySwiper() {
     const hidden = new Set(loadHiddenKeys());
     const merged = [...saved, ...seed].filter(p => !hidden.has(makeKey(p)));
 
-    // 메인 카드에 필요한 필드만 추출
     const toImg = (post) => {
       if (post.image && typeof post.image === "string") return post.image;
       const ph = post.photos?.[0];
       return typeof ph === "string" ? ph : "/img/default-image.png";
     };
 
-    // 최신순 정렬(가능하면 createdAt 사용, 아니면 id/date/맨뒤)
     const toTime = (p) => {
       const cand = p.createdAt || p.date || "";
       const t = Date.parse(cand);
@@ -433,7 +432,6 @@ const CommunitySwiper = memo(function CommunitySwiper() {
         date: p.createdAt || p.date || "",
       }));
 
-    // 필요한 개수만 (예: 12개)
     setSlides(list.slice(0, 10));
   }, []);
 
@@ -462,7 +460,6 @@ const CommunitySwiper = memo(function CommunitySwiper() {
           {slides.map((post, i) => (
             <SwiperSlide key={post.id ?? `c-${i}`}>
               <div className="sec3card">
-                {/* 배경 div 쓰던 자리에 실제 이미지 렌더 */}
                 <div className="sec3bg">
                   <Link to={post.href} aria-label="글 보러가기">
                     <img

@@ -1,4 +1,5 @@
 import "./App.css";
+
 import { Routes, Route, Outlet, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState, useCallback } from "react";
 
@@ -27,6 +28,7 @@ import MyPage from "./routes/MyPage";
 import Event from "./routes/Event";
 import Favorites from "./routes/Favorites";
 import Best from "./routes/Best";
+
 
 /* =========================
    ✅ 탭 최초 1회만 뜨는 풀스크린 스플래시 (오버레이)

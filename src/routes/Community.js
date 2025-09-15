@@ -17,6 +17,7 @@ import "../css/Community.css";
 import NewsCard from "../components/NewsCard";
 import postsData from "../data/CommunityData.json";
 import { useAuth } from "../context/AuthContext";
+import { useAdminAuth } from "../context/AdminAuthContext";
 
 /* ================== 상수(컴포넌트 바깥) ================== */
 const STORAGE_KEY = "communityPosts";          // 사용자가 작성한 글 저장
@@ -86,7 +87,7 @@ function ComCard({ post, onLike, isAdmin, isMine, onAdminDelete }) {
     const firstPhoto = post.photos[0];
     mainImg = typeof firstPhoto === "string" ? firstPhoto : URL.createObjectURL(firstPhoto);
   }
-  
+
   const avatarUrl = post.userImg || "";
 
   return (
@@ -150,9 +151,11 @@ function ComCard({ post, onLike, isAdmin, isMine, onAdminDelete }) {
 export default function Community() {
   const navigate = useNavigate();
   const { isLoggedIn, user, isAdmin: isAdminFn } = useAuth();
+  const { admin, checking } = useAdminAuth() || {}; // ★ 서버 관리자 세션
 
   const writeNavigate = () => {
-    if (!isLoggedIn?.local) {
+    // ★ 관리자 로그인(서버)도 작성 허용
+    if (!isLoggedIn?.local && !admin) {
       const goLogin = window.confirm("로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?");
       if (goLogin) navigate("/Login");
       return;
@@ -161,7 +164,7 @@ export default function Community() {
   };
 
   /* 관리자 여부 */
-  const isAdmin = useMemo(() => {
+  const isAdminLocal = useMemo(() => {
     try {
       if (typeof isAdminFn === "function") return !!isAdminFn();
     } catch {}
@@ -172,6 +175,9 @@ export default function Community() {
       isLoggedIn?.admin === true
     );
   }, [isAdminFn, user, isLoggedIn]);
+
+  // ★ 최종 관리자: 로컬 관리자 OR 서버 관리자
+  const isAdmin = isAdminLocal || !!admin;
 
   /* ===== 커뮤니티 글: 로컬 + JSON 통합 ===== */
   const [posts, setPosts] = useState(() => {
@@ -210,7 +216,6 @@ export default function Community() {
         const isTarget = (target.id != null && p.id === target.id) || p === target;
         return isTarget ? { ...p, likes: Number(p.likes || 0) + 1 } : p;
       });
-      // id가 있는 포스트는 로컬 likesMap에도 반영
       if (target.id != null) {
         const m = loadLikesMap();
         const updated = { ...m, [target.id]: Number((m[target.id] ?? target.likes ?? 0)) + 1 };
@@ -297,7 +302,6 @@ export default function Community() {
   const [newsLoading, setNewsLoading] = useState(true);
   const [newsError, setNewsError] = useState("");
 
-  // CRA 방식 환경변수 사용
   const RAW_NEWS_PROXY = process.env.REACT_APP_NEWS_PROXY || "";
   const NEWS_PROXY = RAW_NEWS_PROXY.trim();
   const fetchedRef = useRef(false);
@@ -309,10 +313,9 @@ export default function Community() {
       setNewsError("뉴스 프록시 주소가 설정되지 않았습니다. .env의 REACT_APP_NEWS_PROXY를 확인하세요.");
       return;
     }
-    if (fetchedRef.current) return; // 중복 방지
+    if (fetchedRef.current) return;
     fetchedRef.current = true;
 
-    // 1) 캐시 확인
     try {
       const raw = localStorage.getItem(NEWS_CACHE_KEY);
       if (raw) {
@@ -364,12 +367,10 @@ export default function Community() {
       });
     };
 
-    // ✅ 안전한 요청 함수
     const fetchOnce = async (
       lang,
       { fromDays = 14, pageSize = 12, searchIn = "title,description" } = {}
     ) => {
-      // 절대 URL 검증(빈값/공백/상대경로 방지)
       if (!/^https?:\/\//i.test(NEWS_PROXY)) {
         throw new Error("NEWS_PROXY invalid: " + (NEWS_PROXY || "<empty>"));
       }
@@ -392,7 +393,6 @@ export default function Community() {
       setNewsLoading(true);
       setNewsError("");
       try {
-        // 단계적 폴백: ko → en → 기간 확장 → 언어 제한 해제 → 제목 위주
         let articles = (await fetchOnce("ko")).articles || [];
         if (articles.length < 5) articles = articles.concat((await fetchOnce("en")).articles || []);
         if (articles.length < 5) articles = articles.concat((await fetchOnce("en", { fromDays: 30 })).articles || []);
@@ -406,7 +406,6 @@ export default function Community() {
         const slidesData = toSlides(cleaned);
         setSlides(slidesData);
 
-        // 캐시 저장
         try {
           localStorage.setItem(
             NEWS_CACHE_KEY,
@@ -491,7 +490,7 @@ export default function Community() {
                   <ComCard
                     post={post}
                     onLike={handleLike}
-                    isAdmin={isAdmin}
+                    isAdmin={isAdmin}               // ★ 서버 관리자 반영
                     isMine={mine}
                     onAdminDelete={handleAdminDelete}
                   />
