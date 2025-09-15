@@ -1,8 +1,5 @@
 footer {
-    width: 100vw;
-    /* 화면 가로 전체 */
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
+
     background: #5E472F;
     color: #fff;
     font-size: 14px;
@@ -10,11 +7,8 @@ footer {
 }
 
 #footerwrap {
-    width: 100%;
     max-width: 1440px;
-    /* 안쪽 콘텐츠 최대 1440px */
     margin: 0 auto;
-    /* 가운데 정렬 */
     padding: 20px;
     box-sizing: border-box;
 }
@@ -49,6 +43,12 @@ footer {
     border-radius: 50%;
     background: #fff;
     display: inline-block;
+    cursor: pointer;
+}
+
+#topfoo .foocircle img {
+    width: 28px;
+    height: 28px;
 }
 
 #middlefoo {

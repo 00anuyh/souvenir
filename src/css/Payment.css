@@ -131,7 +131,8 @@
 
 /* 일반 input 스타일 (주문인/수령인) */
 #payment-text li input:not(.address-box) {
-  width: 590px;
+  width: 380px;
+  margin-left: 90px;
   height: 50px;
   border: 1px solid #c5b9a1;
   border-radius: 6px;
@@ -163,6 +164,11 @@
   gap: 10px;
 }
 
+.address-line input {
+  width: 255px;
+  margin-left: 90px;
+}
+
 .address-box {
   position: absolute;
   left: 120px;
@@ -177,7 +183,8 @@
 
 .address-line button {
   position: relative;
-  left: 270px;
+  width: 110px !important;
+  left: 320px;
   height: 50px;
   padding: 0 15px;
   border: none;
@@ -197,7 +204,8 @@
 }
 
 .address-sub input {
-  max-width: 460px;
+  max-width: 370px;
+  margin-left: 90px;
   height: 50px;
   border: 1px solid #c5b9a1;
   border-radius: 6px;
@@ -207,8 +215,9 @@
 
 /* 연락처 input 세 개 */
 .phone input {
-  max-width: 143px;
-  margin-left: 10px;
+  max-width: 117px;
+  margin-left: 10px !important;
+  margin-right: 0 !important;
   height: 50px;
   border: 1px solid #c5b9a1;
   border-radius: 6px;
@@ -240,6 +249,7 @@
 
 .phone label {
   margin-left: 20px;
+  margin-right: 80px;
 }
 
 #payment-text li.phone input {
@@ -561,8 +571,6 @@
   padding: 0 0 0 10px;
   margin-bottom: 25px;
 }
-
-.payment2-coupon-title {}
 
 .payment2-coupon-sel {
   display: flex;

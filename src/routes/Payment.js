@@ -312,7 +312,7 @@ export default function Payment() {
                       new window.daum.Postcode({
                         popup: false, // 레이어 모드
                         width: 500,
-                        height: 400,
+                        height: 500,
                         oncomplete: function (data) {
                           setZip(data.zonecode);
                           setAddr1(

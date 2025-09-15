@@ -11,6 +11,8 @@ import {
   addToCart as addToCartUtil,
   CART_UPDATED_EVENT,
 } from "../utils/cart";
+import { FaCheck } from "react-icons/fa6";
+
 
 const fmt = (n) => (Number(n) || 0).toLocaleString("ko-KR") + "원";
 
@@ -131,7 +133,7 @@ export default function Cart() {
     return { subtotal, delivery, total, count };
   }, [items]);
 
-  const onKeepShopping = () => navigate(-1);
+  const onKeepShopping = () => navigate("/");
   const selectedLineItems = items.filter((it) => it.checked);
 
   return (
@@ -163,7 +165,7 @@ export default function Cart() {
         {/* 비었을 때 */}
         {items.length === 0 ? (
           <div className="cart-empty">
-            <p>장바구니가 비어 있습니다.</p>
+            <p className="cart-empty-p">장바구니가 비어 있습니다.</p>
             <button className="cart-total-btn1" onClick={onKeepShopping}>
               쇼핑계속하기
             </button>
@@ -245,14 +247,13 @@ export default function Cart() {
             <div id="cart-footer">
               <ul>
                 <li>
-                  <button onClick={toggleAll} disabled={items.length === 0}>
-                    <p>✔</p><span>모든상품 선택</span>
+                  <button onClick={toggleAll} disabled={items.length === 0} style={{ background: "#5e472f" }}>
+                    <span style={{ color: "#fff" }}><FaCheck  style={{ color: "#fff", fontSize: "24px" }}/>모든상품 선택</span>
                   </button>
                 </li>
                 <li>
-                  <button onClick={removeSelected}>
-                    <p><IoTrashSharp /></p>
-                    <span className="qwer">선택품목 삭제</span>
+                  <button onClick={removeSelected}  style={{ background: "#06301a" }}>
+                    <span className="qwer" style={{ color: "#fff" }}><IoTrashSharp  style={{ color: "#fff", fontSize: "24px" }}/>선택품목 삭제</span>
                   </button>
                 </li>
                 <li>

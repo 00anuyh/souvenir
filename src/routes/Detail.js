@@ -21,6 +21,7 @@ import { NavLink, useParams, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Search from "../components/Search.js";
 import KakaoMap from "../components/KakaoMap";
+import { getProfilePic, setProfilePic as saveProfilePic } from "../utils/profilePic.js";
 
 // 🛒 장바구니
 import { addToCart } from "../utils/cart";
@@ -37,6 +38,28 @@ import {
   deleteReviewFor,
   getAuthorId,
 } from "../utils/reviews";
+
+async function compressToDataURL(file, size = 96) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = () => {
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const s = size;
+        canvas.width = s; canvas.height = s;
+        const ctx = canvas.getContext("2d");
+        const minSide = Math.min(img.width, img.height);
+        const sx = (img.width - minSide) / 2;
+        const sy = (img.height - minSide) / 2;
+        ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, s, s);
+        resolve(canvas.toDataURL("image/jpeg", 0.82));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 export default function Detail() {
   // ---------- Auth ----------
@@ -99,6 +122,39 @@ export default function Detail() {
   const [uid, setUid] = useState(null);
   const [couponCount, setCouponCount] = useState(0);
   const [points, setPoints] = useState(0);
+
+  //----------- 프로필 사진(마이 프로필) ---------------//
+  const [profilePic, setProfilePic] = useState(null);
+  const fileRef = useRef(null);
+
+  // uid 바뀔 때 로드
+  useEffect(() => {
+    if (!uid) {
+      setProfilePic(null);
+      return;
+    }
+    setProfilePic(getProfilePic(uid));
+  }, [uid]);
+  // 같은 탭에서 변경 후 돌아왔을 때 갱신
+  useEffect(() => {
+    const onFocus = () => {
+      if (uid) setProfilePic(getProfilePic(uid));
+    };
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [uid]);
+
+  const onPickAvatar = () => {
+    if (!isAuthed) return;
+    fileRef.current?.click();
+  };
+  const onChangeAvatar = async (e) => {
+    const f = e.target.files?.[0];
+    if (!isAuthed || !uid || !f) return;
+    const dataUrl = await compressToDataURL(f, 96);
+    setProfilePic(dataUrl);
+    saveProfilePic(uid, dataUrl);
+  };
 
   // ✅ 삭제 확인 모달 상태
   const [confirmState, setConfirmState] = useState({
@@ -341,7 +397,7 @@ export default function Detail() {
   const total = useMemo(() => basePrice * qty, [basePrice, qty]);
 
   const decQty = useCallback(() => setQty((q) => Math.max(1, q - 1)), []);
-  const incQty = useCallback(() => setQty((q) => q + 1), []); // ✅
+  const incQty = useCallback(() => setQty((q) => q + 1), []);
   const onQtyInput = useCallback((e) => {
     const onlyNum = e.target.value.replace(/[^\d]/g, "");
     setQty(onlyNum === "" ? 1 : Math.max(1, Number(onlyNum)));
@@ -363,7 +419,6 @@ export default function Detail() {
     setShowModal(true);
   }, [active?.id, active?.slug, basePrice, gallery, key, product?.id, product?.name, product?.slug, qty]);
 
-  // ✅ BUY NOW → Payment로 이동
   const handleBuyNow = useCallback(() => {
     const lineItem = {
       id: active?.id ?? product?.id ?? product?.slug ?? String(key ?? ""),
@@ -398,7 +453,6 @@ export default function Detail() {
   // ================================
   //         리뷰 작성/표시/수정/삭제
   // ================================
-  // 현재 작성자 식별자(로그인 uid 있으면 uid, 없으면 디바이스ID)
   const authorId = useMemo(() => uid || getAuthorId(), [uid]);
 
   // 작성 폼
@@ -427,13 +481,16 @@ export default function Detail() {
       return [];
     }
   }, []);
-  const hideBuiltin = useCallback((k, idx) => {
-    const a = getHiddenBuiltin(k);
-    if (!a.includes(idx)) {
-      const next = [...a, idx];
-      localStorage.setItem(`${HIDE_KEY}:${k}`, JSON.stringify(next));
-    }
-  }, [getHiddenBuiltin]);
+  const hideBuiltin = useCallback(
+    (k, idx) => {
+      const a = getHiddenBuiltin(k);
+      if (!a.includes(idx)) {
+        const next = [...a, idx];
+        localStorage.setItem(`${HIDE_KEY}:${k}`, JSON.stringify(next));
+      }
+    },
+    [getHiddenBuiltin]
+  );
   const [hiddenTick, setHiddenTick] = useState(0); // 숨김 변경 트리거
 
   // 로딩
@@ -452,6 +509,11 @@ export default function Detail() {
 
   // 리뷰 모달 열기(읽기)
   const openReviewModalFromData = useCallback((rv) => {
+    const isOwner = rv._kind === "user" && rv.authorId === authorId;
+    const latest = rv._kind === "user" && rv.authorId ? getProfilePic(rv.authorId) : "";
+    const modalAvatar = rv._kind === "user"
+      ? (isOwner ? (profilePic || rv.authorPic || "") : (latest || rv.authorPic || ""))
+      : "";
     setReviewModal({
       open: true,
       name: rv.name,
@@ -459,12 +521,12 @@ export default function Detail() {
       score: rv.score,
       text: rv.excerpt,
       thumb: rv.thumb || "",
+      avatar: modalAvatar,
     });
-  }, []);
+  }, [authorId, profilePic]);
 
-  // 작성 제출
+  // 리뷰 등록
   const submitReview = useCallback(() => {
-    // ✅ 로그인 여부 체크
     if (!isAuthed) {
       alert("로그인 후 리뷰를 작성할 수 있어요.");
       return;
@@ -478,6 +540,7 @@ export default function Detail() {
       return;
     }
     const starsStr = "★★★★★".slice(0, rating) + "☆☆☆☆☆".slice(0, 5 - rating);
+    const picAtWrite = (profilePic ?? getProfilePic(uid) ?? "");
     const review = {
       name: isLoggedIn?.local ? `${user?.name}님` : "회원님",
       stars: starsStr,
@@ -486,12 +549,14 @@ export default function Detail() {
       thumb: rvPhoto, // 없으면 ""
       rating,
       createdAt: new Date().toISOString(),
-      authorId, // ← 작성자 식별 저장
+      authorId,              // ← 작성자 식별 저장
+      authorPic: picAtWrite,      // ← 스냅샷 확실히 저장
+
     };
     const next = addReviewFor(productKey, review);
     setUserReviews(next);
 
-    // ✅ 방금 작성한 리뷰가 바로 맨 위에 보이도록 최신순으로 전환
+    // 최신순으로 전환
     setRvSort("new");
     setRvOnlyPhoto(false);
 
@@ -502,7 +567,7 @@ export default function Detail() {
     setHover(0);
 
     alert("리뷰가 등록되었습니다.");
-  }, [isLoggedIn?.local, productKey, rating, rvPhoto, rvText, user?.name, authorId]);
+  }, [isAuthed, rating, rvText, rvPhoto, isLoggedIn?.local, user?.name, authorId, profilePic, productKey, uid]);
 
   // 표시용(내장 + 사용자) + 정렬/필터 (+관리자 숨김 반영)
   const displayReviews = useMemo(() => {
@@ -511,7 +576,9 @@ export default function Detail() {
     const builtin = (active.reviews || []).map((rv, idx) => {
       const numeric =
         Number(rv.score) ||
-        (typeof rv.stars === "string" ? rv.stars.replace(/[^★]/g, "").length : 0);
+        (typeof rv.stars === "string"
+          ? rv.stars.replace(/[^★]/g, "").length
+          : 0);
       return {
         name: rv.name,
         stars: rv.stars,
@@ -534,18 +601,24 @@ export default function Detail() {
     let all = [...users, ...builtin];
 
     // 관리자 숨김 처리된 내장 리뷰 제거
-    all = all.filter((x) => !(x._kind === "builtin" && hiddenBuiltinIdx.includes(x._idx)));
+    all = all.filter(
+      (x) => !(x._kind === "builtin" && hiddenBuiltinIdx.includes(x._idx))
+    );
 
-    if (rvOnlyPhoto) {
-      all = all.filter((x) => !!x.thumb);
-    }
+    if (rvOnlyPhoto) all = all.filter((x) => !!x.thumb);
 
     if (rvSort === "high") {
-      all.sort((a, b) => (b.rating - a.rating) || (b.createdAt - a.createdAt));
+      all.sort(
+        (a, b) => b.rating - a.rating || b.createdAt - a.createdAt
+      );
     } else if (rvSort === "low") {
-      all.sort((a, b) => (a.rating - b.rating) || (b.createdAt - a.createdAt));
+      all.sort(
+        (a, b) => a.rating - b.rating || b.createdAt - a.createdAt
+      );
     } else {
-      all.sort((a, b) => (b.createdAt - a.createdAt) || (b.rating - a.rating));
+      all.sort(
+        (a, b) => b.createdAt - a.createdAt || b.rating - a.rating
+      );
     }
 
     return all;
@@ -564,24 +637,27 @@ export default function Detail() {
     const f = e.target.files?.[0];
     if (!f) return; // 기존 유지
     const reader = new FileReader();
-    reader.onload = () => setEditState((s) => ({ ...s, thumb: String(reader.result || "") }));
+    reader.onload = () =>
+      setEditState((s) => ({ ...s, thumb: String(reader.result || "") }));
     reader.readAsDataURL(f);
   }, []);
 
-  const startEdit = useCallback((rv) => {
-    // 본인만
-    if (rv._kind !== "user" || rv.authorId !== authorId) {
-      alert("내가 작성한 리뷰만 수정할 수 있어요.");
-      return;
-    }
-    setEditState({
-      open: true,
-      id: rv.id,
-      rating: rv.rating || 0,
-      text: rv.excerpt || "",
-      thumb: rv.thumb || "",
-    });
-  }, [authorId]);
+  const startEdit = useCallback(
+    (rv) => {
+      if (rv._kind !== "user" || rv.authorId !== authorId) {
+        alert("내가 작성한 리뷰만 수정할 수 있어요.");
+        return;
+      }
+      setEditState({
+        open: true,
+        id: rv.id,
+        rating: rv.rating || 0,
+        text: rv.excerpt || "",
+        thumb: rv.thumb || "",
+      });
+    },
+    [authorId]
+  );
 
   const saveEdit = useCallback(() => {
     const { id, rating: r, text, thumb } = editState;
@@ -594,7 +670,9 @@ export default function Detail() {
       alert("후기는 최소 10자 이상 작성해주세요.");
       return;
     }
-    const starsStr = "★★★★★".slice(0, r) + "☆☆☆☆☆".slice(0, 5 - r);
+    const starsStr = "★★★★★".slice(0, rating) + "☆☆☆☆☆".slice(0, 5 - rating);
+    // ⬇⬇ 작성 순간 스냅샷 확보 (state가 비어있어도 UID 기반으로 확보)
+    const picAtWrite = (profilePic ?? getProfilePic(uid) ?? "");
     const next = updateReviewFor(
       productKey,
       id,
@@ -639,11 +717,14 @@ export default function Detail() {
       }
 
       const delAuthorId = isAdmin ? rv.authorId : authorId;
-      askConfirm(isAdmin ? "이 리뷰를 삭제할까요? (관리자)" : "정말 삭제할까요?", () => {
-        const next = deleteReviewFor(productKey, rv.id, delAuthorId);
-        setUserReviews(next);
-        setConfirmState((s) => ({ ...s, open: false, onConfirm: null }));
-      });
+      askConfirm(
+        isAdmin ? "이 리뷰를 삭제할까요? (관리자)" : "정말 삭제할까요?",
+        () => {
+          const next = deleteReviewFor(productKey, rv.id, delAuthorId);
+          setUserReviews(next);
+          setConfirmState((s) => ({ ...s, open: false, onConfirm: null }));
+        }
+      );
     },
     [productKey, authorId, isAdmin, askConfirm, hideBuiltin]
   );
@@ -667,15 +748,26 @@ export default function Detail() {
 
           <div id="detail-tap" className="detail-tabs">
             {tabLabels.map((t, idx) => (
-              <button type="button" key={`tab-${t}-${idx}`} onClick={() => scrollToTarget(idx)}>
+              <button
+                type="button"
+                key={`tab-${t}-${idx}`}
+                onClick={() => scrollToTarget(idx)}
+              >
                 {t}
               </button>
             ))}
           </div>
         </div>
 
-        <NavLink to="/" className={({ isActive }) => (isActive ? "active" : undefined)} id="detail-logo">
-          <img src="https://00anuyh.github.io/SouvenirImg/logo.png" alt="logo" />
+        <NavLink
+          to="/"
+          className={({ isActive }) => (isActive ? "active" : undefined)}
+          id="detail-logo"
+        >
+          <img
+            src="https://00anuyh.github.io/SouvenirImg/logo.png"
+            alt="logo"
+          />
         </NavLink>
 
         <div id="header-right">
@@ -691,13 +783,22 @@ export default function Detail() {
             <IoSearch size={22} />
           </NavLink>
 
-          <NavLink to="/MyPage" className={({ isActive }) => (isActive ? "active" : undefined)}>
+          <NavLink
+            to="/MyPage"
+            className={({ isActive }) => (isActive ? "active" : undefined)}
+          >
             <HiOutlineUser />
           </NavLink>
-          <NavLink to="/Favorites" className={({ isActive }) => (isActive ? "active" : undefined)}>
+          <NavLink
+            to="/Favorites"
+            className={({ isActive }) => (isActive ? "active" : undefined)}
+          >
             <IoHeartOutline />
           </NavLink>
-          <NavLink to="/cart" className={({ isActive }) => (isActive ? "active" : undefined)}>
+          <NavLink
+            to="/cart"
+            className={({ isActive }) => (isActive ? "active" : undefined)}
+          >
             <IoCartOutline />
           </NavLink>
 
@@ -713,7 +814,10 @@ export default function Detail() {
             </button>
           ) : (
             <div className="login_btn_li">
-              <NavLink to="/Login" className={({ isActive }) => (isActive ? "active" : undefined)}>
+              <NavLink
+                to="/Login"
+                className={({ isActive }) => (isActive ? "active" : undefined)}
+              >
                 로그인
               </NavLink>
             </div>
@@ -736,22 +840,34 @@ export default function Detail() {
             </p>
           </li>
           <li>
-            <NavLink to="/lifestyle" className={({ isActive }) => (isActive ? "active" : undefined)}>
+            <NavLink
+              to="/lifestyle"
+              className={({ isActive }) => (isActive ? "active" : undefined)}
+            >
               LIFESTYLE
             </NavLink>
           </li>
           <li>
-            <NavLink to="/lighting" className={({ isActive }) => (isActive ? "active" : undefined)}>
+            <NavLink
+              to="/lighting"
+              className={({ isActive }) => (isActive ? "active" : undefined)}
+            >
               LIGHTING
             </NavLink>
           </li>
           <li>
-            <NavLink to="/Objects" className={({ isActive }) => (isActive ? "active" : undefined)}>
+            <NavLink
+              to="/Objects"
+              className={({ isActive }) => (isActive ? "active" : undefined)}
+            >
               OBJECTS
             </NavLink>
           </li>
           <li>
-            <NavLink to="/Community" className={({ isActive }) => (isActive ? "active" : undefined)}>
+            <NavLink
+              to="/Community"
+              className={({ isActive }) => (isActive ? "active" : undefined)}
+            >
               COMMUNITY
             </NavLink>
           </li>
@@ -855,7 +971,22 @@ export default function Detail() {
                 }}
               >
                 <div className="rv-top">
-                  <div className="rv-avatar lg" aria-hidden="true" />
+                  <div
+                    className={`rv-avatar lg ${profilePic ? "has-img" : "is-empty"} ${isAuthed ? "can-edit" : ""}`}
+                    style={profilePic ? { backgroundImage: `url(${profilePic})` } : undefined}
+                    onClick={isAuthed ? onPickAvatar : undefined}
+                    title={isAuthed ? "프로필 사진 변경" : "로그인 후 변경 가능"}
+                    aria-hidden="true"
+                    aria-disabled={!isAuthed}
+                  />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileRef}
+                    onChange={onChangeAvatar}
+                    hidden
+                    disabled={!isAuthed}
+                  />
                   <div className="rv-meta">
                     <p className="rv-nick">{isLoggedIn?.local ? `${user?.name}님` : "회원님"}</p>
 
@@ -901,7 +1032,11 @@ export default function Detail() {
                 {/* 선택 시 간단 미리보기 */}
                 {rvPhoto && (
                   <div className="rv-preview">
-                    <img src={rvPhoto} alt="첨부 미리보기" style={{ maxWidth: 140, borderRadius: 8, marginTop: 10 }} />
+                    <img
+                      src={rvPhoto}
+                      alt="첨부 미리보기"
+                      style={{ maxWidth: 140, borderRadius: 8, marginTop: 10 }}
+                    />
                   </div>
                 )}
 
@@ -913,7 +1048,11 @@ export default function Detail() {
                   minLength={10}
                   required
                 />
-                <button className="rv-submit" type="submit" title={isAuthed ? "리뷰 등록" : "로그인 후 작성 가능"}>
+                <button
+                  className="rv-submit"
+                  type="submit"
+                  title={isAuthed ? "리뷰 등록" : "로그인 후 작성 가능"}
+                >
                   등록하기
                 </button>
               </form>
@@ -963,11 +1102,29 @@ export default function Detail() {
               <ul className="rv-list">
                 {displayReviews.map((rv, idx) => {
                   const isOwner = rv._kind === "user" && rv.authorId === authorId;
-                  const canDelete = isOwner || isAdmin; // ✅ 관리자도 삭제 가능
+                  const canDelete = isOwner || isAdmin;
+
+                  // 아바타:
+                  //  - 내 리뷰: 최신 내 프로필(있으면) → 스냅샷(authorPic)
+                  //  - 남 리뷰: 항상 스냅샷(authorPic)
+                  let avatarUrl = "";
+                  if (rv._kind === "user") {
+                    if (isOwner) {
+                      avatarUrl = (profilePic || rv.authorPic || "");
+                    } else {
+                      const latest = rv.authorId ? getProfilePic(rv.authorId) : "";
+                      avatarUrl = (latest || rv.authorPic || "");
+                    }
+                  }
+
                   return (
                     <li className="rv-item" key={rv.id || `${rv._kind}-${rv._idx || idx}`}>
                       <div className="rv-head">
-                        <div className="rv-avatar" aria-hidden="true" />
+                        <div
+                          className={`rv-avatar ${avatarUrl ? "has-img" : "is-empty"}`}
+                          style={avatarUrl ? { backgroundImage: `url(${avatarUrl})` } : undefined}
+                          aria-hidden="true"
+                        />
                         <div>
                           <p className="rv-name">{rv.name}</p>
                           <p className="rv-starline">
@@ -976,7 +1133,6 @@ export default function Detail() {
                         </div>
                         {(canDelete || isOwner) && (
                           <div className="rv-actions" style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
-                            {/* 수정은 본인만 */}
                             {isOwner && (
                               <button type="button" className="rv-edit-btn" onClick={() => startEdit(rv)}>
                                 수정
@@ -1046,11 +1202,9 @@ export default function Detail() {
 
               <div className="detail-option" style={{ display: optOpen ? "block" : "none" }}>
                 <div className="detail-actions">
-                  {/* CART → 모달 */}
                   <button className="detail-cartBtn" type="button" onClick={handleAddToCart}>
                     CART
                   </button>
-                  {/* BUY → 결제 화면 */}
                   <button className="detail-buyBtn" type="button" onClick={handleBuyNow}>
                     BUY
                   </button>
@@ -1093,16 +1247,14 @@ export default function Detail() {
                   </button>
                 </div>
 
-                <p className="detail-total">
-                  총합 {"\u00A0\u00A0"} {formatKRW(total)}
-                </p>
+                <p className="detail-total">총합 {"\u00A0\u00A0"} {formatKRW(total)}</p>
               </div>
             </div>
           </div>
         </div>
       </main>
 
-      {/* 리뷰 읽기 모달 (디자인/구조 유지: 항상 렌더 + display 토글) */}
+      {/* 리뷰 읽기 모달 */}
       <aside
         id="rv-modal"
         role="dialog"
@@ -1111,7 +1263,7 @@ export default function Detail() {
         ref={rvModalRef}
         style={{
           display: reviewModal.open ? "block" : "none",
-          zIndex: 2000, // 헤더/기타 오버레이 위
+          zIndex: 2000,
         }}
       >
         <button
@@ -1126,7 +1278,11 @@ export default function Detail() {
           {reviewModal.thumb ? <img className="rvm-hero" src={reviewModal.thumb} alt="리뷰 이미지" /> : null}
         </div>
         <div className="rvm-head">
-          <div className="rvm-avatar" aria-hidden="true" />
+          <div
+            className={`rvm-avatar ${reviewModal.avatar ? "has-img" : "is-empty"}`}
+            style={reviewModal.avatar ? { backgroundImage: `url(${reviewModal.avatar})` } : undefined}
+            aria-hidden="true"
+          />
           <div className="rvm-meta">
             <h4 id="rvm-title" className="rvm-name">{reviewModal.name}</h4>
             <p className="rvm-starline">
@@ -1139,7 +1295,7 @@ export default function Detail() {
         </div>
       </aside>
 
-      {/* 리뷰 수정 모달 (본인 리뷰만) - 조건부 렌더링 */}
+      {/* 리뷰 수정 모달 (본인 리뷰만) */}
       {editState.open && (
         <aside
           id="rv-edit-modal"
@@ -1150,7 +1306,6 @@ export default function Detail() {
             if (e.target === e.currentTarget) setEditState((s) => ({ ...s, open: false }));
           }}
         >
-          {/* 1행: 닉네임 | 닫기 */}
           <div className="rve-nick" id="rve-title">
             {isLoggedIn?.local ? `${user?.name}님` : "회원님"}
           </div>
@@ -1163,7 +1318,6 @@ export default function Detail() {
             ×
           </button>
 
-          {/* 2행: 별점 */}
           <div className="rv-stars" role="radiogroup" aria-label="별점 수정">
             {[1, 2, 3, 4, 5].map((v) => {
               const filled = (editState.rating || 0) >= v;
@@ -1183,14 +1337,9 @@ export default function Detail() {
             })}
           </div>
 
-          {/* 3~4행: 이미지/버튼(좌) | 텍스트박스(우) */}
           <div className="rv-preview">
             {editState.thumb && (
-              <img
-                src={editState.thumb}
-                alt="첨부 미리보기"
-                style={{ borderRadius: 8 }}
-              />
+              <img src={editState.thumb} alt="첨부 미리보기" style={{ borderRadius: 8 }} />
             )}
           </div>
 
@@ -1208,12 +1357,7 @@ export default function Detail() {
             <span>사진 바꾸기</span>
           </label>
 
-          {/* 5행: 저장 */}
-          <button
-            className="rv-edit-save"
-            type="button"
-            onClick={saveEdit}
-          >
+          <button className="rv-edit-save" type="button" onClick={saveEdit}>
             저장
           </button>
         </aside>
@@ -1233,7 +1377,7 @@ export default function Detail() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            zIndex: 2000
+            zIndex: 2000,
           }}
         >
           <div
@@ -1284,10 +1428,7 @@ export default function Detail() {
           aria-labelledby="cart-modal-title"
           onClick={() => setShowModal(false)}
         >
-          <div
-            className="cart-modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="cart-modal-content" onClick={(e) => e.stopPropagation()}>
             <p id="cart-modal-title">장바구니에 담았어요!</p>
             <div className="actions">
               <button

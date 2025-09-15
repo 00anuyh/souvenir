@@ -9,7 +9,7 @@ export const SESSION_KEY = "souvenir_session_v1";
 function safeParse(json, fallback) {
   try { return JSON.parse(json); } catch { return fallback; }
 }
-const hasLS = () => typeof localStorage !== "undefined";
+const hasLS = () => typeof localStorage !== "관리자";
 
 /* -------------------------- Users CRUD -------------------------- */
 function getUsersMap() {

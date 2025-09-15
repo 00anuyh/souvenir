@@ -1,14 +1,16 @@
 // src/pages/MyPage.jsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { getRewards } from "../utils/rewards";
 import { getSession } from "../utils/localStorage";
 import { loadOrders, ORDERS_UPDATED_EVENT } from "../utils/orders";
 import { getCart } from "../utils/cart";
+import { getProfilePic, setProfilePic, clearProfilePic } from "../utils/profilePic";
 
 import { HiBell } from "react-icons/hi2";
 import { FaGear } from "react-icons/fa6";
+
 
 import "../css/mypage.css";
 import GiftModal from "../components/GiftModal";
@@ -30,6 +32,8 @@ const addDays = (d, n) => {
   x.setDate(x.getDate() + n);
   return x;
 };
+
+
 
 // ✅ 절대/로컬/상대 경로 모두 안전하게 처리
 const resolveImg = (src) => {
@@ -123,6 +127,9 @@ const MyPage = () => {
   const refreshPageData = () => {
     const uid = getUid();
 
+     // 프로필도 같이 최신화
+ setProfilePicState(getProfilePic(uid));
+
     // 이벤트
     try {
       const raw = localStorage.getItem(keyFor(uid));
@@ -145,6 +152,42 @@ const MyPage = () => {
     const base = saved.length ? saved : fallback;
     const sorted = [...base].sort((a, b) => toDate(b.date) - toDate(a.date));
     setOrders(sorted);
+  };
+
+  // ⬇️ 컴포넌트 내부 state 추가
+  const [profilePic, setProfilePicState] = useState(null);
+
+  // ⬇️ uid 가져오는 함수(getUid)는 이미 있으니 그대로 사용
+  useEffect(() => {
+    const uid = getUid();
+    setProfilePicState(getProfilePic(uid));
+  }, [isAuthed]);
+
+  // ⬇️ 파일 선택 처리기
+  const fileInputRef = useRef(null);
+
+  const onPickProfile = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const onFileChange = (e) => {
+    const uid = getUid();
+    const f = e.target.files?.[0];
+    if (!uid || !f) return;
+    // 용량주의: localStorage 제한 ~5MB. 큰 이미지는 압축 권장(지금은 바로 저장).
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result; // base64
+      setProfilePic(uid, dataUrl);
+      setProfilePicState(dataUrl);
+    };
+    reader.readAsDataURL(f);
+  };
+
+  const onResetProfile = () => {
+    const uid = getUid();
+    clearProfilePic(uid);
+    setProfilePicState(null);
   };
 
   useEffect(() => {
@@ -313,8 +356,13 @@ const MyPage = () => {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="a_nav-title"
-                style={{ border: "1px solid #5e472f", cursor: "pointer", borderRadius: 5, padding: 2 }}
+                className="a_nav-logout"
+                style={{
+                  color: "#fff", 
+                  cursor: "pointer", 
+                  borderRadius: 5, 
+                  padding: 3,
+                }}
               >
                 <p>로그아웃하기</p>
               </button>
@@ -325,9 +373,29 @@ const MyPage = () => {
           <section className="a_my-content">
             {/* 프로필 */}
             <div className="a_profile">
-              <div className="a_profile-img">
-                <i className="fa-solid fa-user" aria-hidden="true"></i>
+              {/* 프로필 이미지 박스 */}
+              <div className="a_profile-img" onClick={onPickProfile} style={{ cursor: "pointer" }}>
+              
+                {profilePic ? (
+                  <img
+                    src={profilePic}
+                    alt="profile"
+                    style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
+                    onError={() => setProfilePicState(null)}
+                  />
+                ) : (
+                  <i className="fa-solid fa-user" aria-hidden="true"></i>
+                )}
               </div>
+
+              {/* 숨겨진 파일 입력 */}
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={onFileChange}
+                style={{ display: "none" }}
+              />
               <div className="a_nickname">
                 {loggedIn ? <span>{user?.name || "회원"}</span> : <Link to="/login">로그인이 필요합니다</Link>}
               </div>

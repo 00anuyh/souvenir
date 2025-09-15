@@ -230,3 +230,29 @@
 .text-submit:hover {
   background-color: #5e472f;
 }
+
+/* 공통 아바타 스타일 */
+.a_profile-img,
+.rv-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  background-color: #eee;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+}
+
+.a_profile-img.has-img>i,
+.rv-avatar.has-img>i {
+  display: none;
+}
+
+/* 읽기 전용: 포인터 제거 */
+.a_profile-img,
+.rv-avatar {
+  cursor: default;
+}

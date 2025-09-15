@@ -71,6 +71,7 @@ const makeKey = (p) =>
 /* ================== 카드 ================== */
 function ComCard({ post, onLike, isAdmin, isMine, onAdminDelete }) {
   const navigate = useNavigate();
+
   const goDetail = () => {
     if (post.id != null) navigate(`/Community3/${post.id}`);
   };
@@ -85,6 +86,8 @@ function ComCard({ post, onLike, isAdmin, isMine, onAdminDelete }) {
     const firstPhoto = post.photos[0];
     mainImg = typeof firstPhoto === "string" ? firstPhoto : URL.createObjectURL(firstPhoto);
   }
+  
+  const avatarUrl = post.userImg || "";
 
   return (
     <div className="comBox">
@@ -98,8 +101,13 @@ function ComCard({ post, onLike, isAdmin, isMine, onAdminDelete }) {
 
       <div className="comInpo">
         <div className="comUser">
-          <div className="a_profile-img">
-            <i className="fa-solid fa-user" aria-hidden="true"></i>
+          <div
+            className={`a_profile-img ${avatarUrl ? "has-img" : "is-empty"}`}
+            style={avatarUrl ? { backgroundImage: `url(${avatarUrl})` } : undefined}
+            aria-hidden="true"
+            title="프로필 사진은 마이페이지에서 변경할 수 있어요."
+          >
+            {!avatarUrl && <i className="fa-solid fa-user" aria-hidden="true"></i>}
           </div>
           <p>{post.author || post.user || "익명"}</p>
         </div>

@@ -59,4 +59,12 @@
     font-weight: 400;
     font-size: 20px;
     font-family: "NanumSquareRound", serif;
+    color: #5e472f;
+}
+
+#menu2 button a,
+#menu2 a,
+#menu2 .login_btn {
+    font-weight: 550;
+    font-size: 23px;
 }

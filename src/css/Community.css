@@ -158,15 +158,18 @@
     transform: translateY(1px);
 }
 
-.ltm-icon {
+.com-ltm-icon {
     width: 18px;
     height: 18px;
+    color: #5E472F;
 }
 
-.ltm-num {
+.com-ltm-num {
     font-size: 0.95rem;
     font-weight: 600;
     letter-spacing: 0.2px;
+    color: #5E472F;
+
 }
 
 .comLine {

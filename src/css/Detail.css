@@ -298,6 +298,49 @@
     height: 48px;
 }
 
+.detail-warp1 .rv-avatar,
+.detail-warp1 .rvm-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    background: #f3f3f3;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+.detail-warp1 .rv-avatar.lg {
+    width: 48px;
+    height: 48px;
+}
+
+.rv-avatar.is-empty::before,
+.rvm-avatar.is-empty::before {
+    content: "\f007";
+    /* Font Awesome user */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 20px;
+    color: #999;
+}
+
+.rv-avatar.can-edit {
+    cursor: pointer;
+}
+
+.rv-avatar[aria-disabled="true"] {
+    cursor: default;
+    opacity: 0.85;
+}
+
+.rv-avatar.lg.is-empty::before {
+    font-size: 26px;
+}
+
+
 .detail-warp1 .rv-meta {
     display: flex;
     flex-direction: column;

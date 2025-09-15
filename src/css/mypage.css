@@ -115,11 +115,21 @@
     font-weight: 500;
 }
 
-
 .logout {
     margin-top: 350px;
+}
 
+.a_nav-logout {
+    width: 200px;
+    font-size: 1.2rem;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    font-weight: 500;
+    background: #5e472f;
+}
 
+.a_nav-logout:hover {
+    background: #06301a;
 }
 
 /* ===== 콘텐츠 ===== */

@@ -82,11 +82,12 @@
 }
 
 .cart-empty {
-  margin-top: 100px;
+  margin-bottom: 50px;
 }
 
-.cart-empty p {
+.cart-empty-p {
   font-size: 1.2rem;
+  margin: 50px 0 50px 0;
 }
 
 /* 카트 아이템 */
@@ -424,41 +425,20 @@
 #cart-footer ul button {
   width: 195px;
   height: 60px;
-  border: 1px solid #91704c;
   border-radius: 8px;
-  background-color: white;
+  color: #fff;
   margin: 30px 20px 30px 0;
   cursor: pointer;
 }
 
-#cart-footer ul button:hover {
-  background-color: #fff7e4;
-}
-
-#cart-footer ul li button p {
-  color: #91704c;
-  font-size: 40px;
-  float: left;
-  margin-left: 20px;
-  margin-bottom: 15px;
-}
-
 #cart-footer ul li button span {
-  color: #91704c;
-  font-size: 20px;
+  color: #5e472f;
+  font-size: 1.3rem;
   display: block;
-  margin-top: 15px;
-  margin-right: 3px;
-}
-
-#cart-footer ul li:nth-child(2) button p {
-  margin-top: 8px !important;
-  margin-left: 10px;
-}
-
-#cart-footer ul li button .qwer {
-  display: block;
-  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
 .cart-notice {
@@ -544,7 +524,6 @@
 .cart-total-btn1 {
   width: 200px;
   height: 60px;
-  border: 1px solid #91704c;
   border-radius: 8px;
   background-color: #5e472f;
   margin: 30px 20px 30px 0px;
@@ -553,10 +532,14 @@
   font-size: 1.2rem;
 }
 
+/* .cart-total-btn1:hover {
+  background-color: #06301a;
+}
+ */
 .cart-total-btn2 {
   width: 200px;
   height: 60px;
-  border: 1px solid #91704c;
+  border: 1px solid #5e472f;
   border-radius: 8px;
   background-color: #06301a;
   margin: 30px 20px 30px 0px;
