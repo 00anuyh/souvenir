@@ -1,11 +1,8 @@
 // src/routes/Login.js
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useAdminAuth } from "../context/AdminAuthContext";
-
-// ⛔ 과거 로컬 관리자 로직 제거: anyAdminExists 사용 안 함
-// import { anyAdminExists } from "../utils/userStore";
 
 import SignupModal from "../components/SignupModal";
 import SocialLogin from "../components/SocialLogin";
@@ -18,6 +15,7 @@ export default function Login() {
 
   // 일반(로컬) 사용자 로그인 컨텍스트
   const { loginLocal, logout, login, setNaverInstance } = useAuth();
+
   // 관리자 로그인 컨텍스트 (서버 쿠키 세션)
   const { login: adminLogin } = useAdminAuth();
 
@@ -27,36 +25,41 @@ export default function Login() {
   const [aErr, setAErr] = useState("");
   const [aLoading, setALoading] = useState(false);
 
-  // AdminSetup에서 돌아온 경우: 이메일 프리필 + 세션 플래그 저장 (배너 없음)
+  // AdminSetup 에서 돌아온 경우: 이메일 프리필 + 플래그 기록
   useEffect(() => {
     const s = location.state;
     if (s?.adminReady) {
       if (s.adminEmail) setAID(String(s.adminEmail));
       sessionStorage.setItem("admin_ready", "1");
-      // 히스토리 정리 (뒤로가기 시 state 재적용 방지)
+      // 뒤로가기 방지용으로 state 제거
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
 
-  // ✅ 관리자 로그인 버튼: 과거 anyAdminExists 체크 제거, 모달만 연다
-  const openAdminLogin = () => {
-    setAdminOpen(true);
-  };
+  // 보호 라우트에서 튕겨온 목적지 (없으면 /admin)
+  const backTo = useMemo(
+    () => location.state?.from?.pathname || "/admin",
+    [location.state]
+  );
 
-  // ✅ 관리자 로그인 (서버 /api/admin/login 경유)
+  // 관리자 로그인 모달 열기
+  const openAdminLogin = () => setAdminOpen(true);
+
+  // ✅ 관리자 로그인 (쿠키 세션)
   const doAdminLogin = async (e) => {
     e.preventDefault();
     setAErr("");
     setALoading(true);
     try {
       const email = aID.trim().toLowerCase();
-      await adminLogin(email, aPw);
+      await adminLogin(email, aPw); // AdminAuthContext → /api/admin/login 호출( credentials: 'include' )
       setAdminOpen(false);
       setAID("");
       setAPw("");
       sessionStorage.removeItem("admin_ready");
-      navigate("/");
+      navigate(backTo, { replace: true });
       alert("관리자 로그인 완료!");
+      navigate("/");
     } catch (err) {
       const m =
         err?.message === "INVALID_CREDENTIALS"
@@ -105,7 +108,7 @@ export default function Login() {
   };
 
   return (
-    <div id="login-wrap" style={{ width: "100%", margin: "0 auto", height: "100vh"  }}>
+    <div id="login-wrap" style={{ width: "100%", margin: "0 auto", height: "100vh" }}>
       <main className="login-page">
         <div id="login-progress">
           <ul>
@@ -137,6 +140,7 @@ export default function Login() {
               value={form.userid}
               onChange={onChange}
               placeholder="아이디"
+              autoComplete="username"
             />
           </div>
 
@@ -147,6 +151,7 @@ export default function Login() {
               value={form.password}
               onChange={onChange}
               placeholder="비밀번호"
+              autoComplete="current-password"
             />
           </label>
 
@@ -155,9 +160,9 @@ export default function Login() {
           </div>
 
           <div className="sub-links">
-            <button type="button" className="link-btn" onClick={openAdminLogin}>
+            {/* <button type="button" className="link-btn" onClick={openAdminLogin} >
               관리자로그인
-            </button>
+            </button> */}
             <button
               type="button"
               className="link-btn"
@@ -188,6 +193,7 @@ export default function Login() {
                   value={aID}
                   onChange={(e) => setAID(e.target.value)}
                   required
+                  autoComplete="username"
                 />
                 <input
                   type="password"
@@ -195,6 +201,7 @@ export default function Login() {
                   value={aPw}
                   onChange={(e) => setAPw(e.target.value)}
                   required
+                  autoComplete="current-password"
                 />
                 {aErr && <p className="modal-error">{aErr}</p>}
                 <div className="modal-actions">
@@ -213,7 +220,7 @@ export default function Login() {
               <div className="modal-sub">
                 <button
                   type="button"
-                  onClick={() => navigate("/admin-setup")}
+                  onClick={() => navigate("/admin/setup")}
                   style={{ fontFamily: "NanumSquareRound" }}
                 >
                   관리자 생성 / 승격하기

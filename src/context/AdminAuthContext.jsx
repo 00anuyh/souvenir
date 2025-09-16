@@ -1,45 +1,131 @@
 // src/context/AdminAuthContext.jsx
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { adminLogin, fetchAdminMe, adminLogout } from '../api/admin';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import {
+  adminLogin,
+  fetchAdminMe,
+  adminLogout,
+  __API_BASE,
+} from "../api/admin";
 
-const AdminAuthCtx = createContext(null);
+/**
+ * Context shape
+ * - admin: { email, role } | null
+ * - loading: boolean
+ * - error: string | null
+ * - login(email, password)
+ * - logout()
+ * - refresh()
+ * - isAuthed, isAdmin
+ * - apiBase: string
+ */
+const AdminAuthContext = createContext(null);
 
 export function AdminAuthProvider({ children }) {
   const [admin, setAdmin] = useState(null);
-  const [checking, setChecking] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // 앱 시작 시 쿠키 기반 세션 확인
+  // 앱 시작 시 세션 확인
   useEffect(() => {
-    let mounted = true;
+    let alive = true;
     (async () => {
       try {
+        setLoading(true);
+        setError(null);
         const me = await fetchAdminMe();
-        if (mounted) setAdmin(me); // me or null
+        if (!alive) return;
+        setAdmin(me);
+      } catch (e) {
+        if (!alive) return;
+        setAdmin(null);
+        setError(e?.message || "SESSION_CHECK_FAILED");
       } finally {
-        if (mounted) setChecking(false);
+        if (alive) setLoading(false);
       }
     })();
-    return () => { mounted = false; };
+    return () => {
+      alive = false;
+    };
   }, []);
 
   const login = useCallback(async (email, password) => {
-    const a = await adminLogin(email, password);
-    setAdmin(a);
-    return a;
+    try {
+      setLoading(true);
+      setError(null);
+      const a = await adminLogin(email, password);
+      setAdmin(a);
+      return { ok: true };
+    } catch (e) {
+      const msg =
+        e?.message === "INVALID_CREDENTIALS"
+          ? "이메일 또는 비밀번호가 올바르지 않습니다."
+          : e?.message === "NETWORK_ERROR"
+          ? "서버에 접속할 수 없습니다. 주소/CORS/HTTPS 설정을 확인하세요."
+          : e?.message || "LOGIN_FAILED";
+      setAdmin(null);
+      setError(msg);
+      return { ok: false, error: msg };
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const logout = useCallback(async () => {
-    await adminLogout();
-    setAdmin(null);
+    try {
+      setLoading(true);
+      await adminLogout();
+    } finally {
+      setAdmin(null);
+      setError(null);
+      setLoading(false);
+    }
   }, []);
 
+  const refresh = useCallback(async () => {
+    try {
+      setLoading(true);
+      const me = await fetchAdminMe();
+      setAdmin(me);
+      setError(null);
+    } catch (e) {
+      setAdmin(null);
+      setError(e?.message || "REFRESH_FAILED");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      admin,
+      loading,
+      error,
+      login,
+      logout,
+      refresh,
+      isAuthed: !!admin,
+      isAdmin: admin?.role === "admin",
+      apiBase: __API_BASE,
+    }),
+    [admin, loading, error, login, logout, refresh]
+  );
+
   return (
-    <AdminAuthCtx.Provider value={{ admin, checking, login, logout }}>
+    <AdminAuthContext.Provider value={value}>
       {children}
-    </AdminAuthCtx.Provider>
+    </AdminAuthContext.Provider>
   );
 }
 
 export function useAdminAuth() {
-  return useContext(AdminAuthCtx);
+  const ctx = useContext(AdminAuthContext);
+  if (!ctx) throw new Error("useAdminAuth must be used within AdminAuthProvider");
+  return ctx;
 }

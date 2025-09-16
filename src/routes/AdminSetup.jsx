@@ -1,74 +1,117 @@
-// src/routes/AdminSetup.jsx
-import React, { useEffect, useRef, useState } from "react";
+// src/pages/AdminSetup.jsx
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-// AdminSetup에서는 실제 로그인(세션 생성)하지 않습니다.
+
+/**
+ * 서버가 /api/admin/setup 을 제공한다고 가정한 페이지.
+ * (제공되지 않는 환경에서는 안내만 띄워도 무방)
+ */
 export default function AdminSetup() {
   const nav = useNavigate();
-
-  const [email, setEmail] = useState("33han@souvenir.com");
-  const [password, setPassword] = useState("33han");
+  const [email, setEmail] = useState("");
+  const [pw, setPw] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [msg, setMsg] = useState("");
-  const [loading, setLoading] = useState(false);
-  const emailRef = useRef(null);
-
-  useEffect(() => { emailRef.current?.focus(); }, []);
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setMsg(""); setLoading(true);
+    setMsg("");
+    setSubmitting(true);
     try {
-      // 여기서는 계정 “생성 완료”만 안내하고, 실제 로그인은 Login 페이지의 모달에서 진행
-      const normEmail = String(email).trim().toLowerCase();
+      const r = await fetch("/api/admin/setup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // 쿠키 필요 시
+        body: JSON.stringify({ email, password: pw }),
+      });
+      const data = await r.json().catch(() => ({}));
 
-      // TODO: 별도의 생성 API가 있다면 여기서 호출
-      // await fetch('/api/admin/create', { ... })
+      if (!r.ok || !data?.ok) {
+        const m = data?.error || `SETUP_FAILED_${r.status}`;
+        setMsg(m);
+        setSubmitting(false);
+        return;
+      }
 
-      setMsg("생성이 완료되었습니다. 로그인 페이지에서 관리자 로그인을 진행해 주세요.");
-      // ✅ Login 페이지로 이동하면서, 모달에서 사용할 프리셋(이메일/플래그) 전달
-      nav("/Login", { state: { adminReady: true, adminEmail: normEmail } });
+      // 완료 후 로그인 화면으로
+      nav("/login", {
+        replace: true,
+        state: { adminReady: true, adminEmail: email.trim() },
+      });
     } catch (err) {
-      const m = err?.message || "생성에 실패했습니다.";
-      setMsg(m);
-    } finally {
-      setLoading(false);
+      setMsg("NETWORK_ERROR");
+      setSubmitting(false);
     }
   };
 
   return (
-    <div style={{maxWidth:"1440px",display:"flex",justifyContent:"center",alignItems:"center",flexDirection:"column",gap:"20px",margin:"50px auto"}}>
-      <h2>관리자 생성하기</h2>
-      <p style={{ fontSize: 15, color: "#2a2a2a" }}>
-        관리자를 이메일/비밀번호로 생성한 뒤, 로그인 페이지에서 <b>관리자 로그인</b> 버튼으로 로그인하세요.
+    <section style={{ maxWidth: 420, margin: "40px auto", padding: 16 }}>
+      <h2>관리자 생성 / 승격</h2>
+      <p style={{ color: "#666", marginBottom: 16 }}>
+        최초 1회 관리자 계정을 생성하거나 기존 계정을 승격합니다.
       </p>
-      <form onSubmit={onSubmit} style={{ display: "grid", gap: 20 }}>
-        <input
-          ref={emailRef}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="관리자 이메일"
-          type="email"
-          required
-          autoComplete="username"
-          style={{ background: "#FFFADF", padding: "10px 30px", fontSize: 16 }}
-        />
-        <input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="비밀번호"
-          type="password"
-          required
-          autoComplete="new-password"
-          style={{ background: "#FFFADF", padding: "10px 30px", fontSize: 16 }}
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? "생성 중…" : "생성하기"}
+
+      <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
+        <label>
+          이메일
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="admin@example.com"
+            style={{ width: "100%", padding: 8, marginTop: 4 }}
+          />
+        </label>
+        <label>
+          비밀번호
+          <input
+            type="password"
+            required
+            value={pw}
+            onChange={(e) => setPw(e.target.value)}
+            placeholder="8자 이상"
+            style={{ width: "100%", padding: 8, marginTop: 4 }}
+          />
+        </label>
+
+        <button
+          type="submit"
+          disabled={submitting}
+          style={{
+            padding: "10px 14px",
+            background: "#5e472f",
+            color: "#fff",
+            border: 0,
+            borderRadius: 8,
+            cursor: "pointer",
+            fontWeight: 700,
+          }}
+        >
+          {submitting ? "처리 중..." : "관리자 생성"}
         </button>
+        {msg && (
+          <div style={{ color: "#c00", fontWeight: 600, marginTop: 8 }}>{msg}</div>
+        )}
       </form>
-      {msg && (
-        <p style={{ marginTop: 15, color: msg.includes("완료") ? "#2a7a2a" : "#b00020" }}>
-          {msg}
-        </p>
-      )}
-    </div>
+
+      <div style={{ marginTop: 16 }}>
+        <button
+          type="button"
+          onClick={() => nav("/login")}
+          style={{
+            background: "transparent",
+            color: "#5e472f",
+            border: "1px solid #5e472f",
+            padding: "10px 14px",
+            borderRadius: 8,
+            cursor: "pointer",
+            fontWeight: 700,
+          }}
+        >
+          로그인으로 돌아가기
+        </button>
+      </div>
+    </section>
   );
 }
