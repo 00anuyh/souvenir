@@ -298,11 +298,11 @@
     color: #fff;
     font-weight: 700;
     letter-spacing: .12em;
-    font-size: 1.3rem;
-    /* 1.5 → 1.3 */
+    font-size: 1.5rem;
     display: none;
     align-items: center;
     justify-content: center;
+    font-family: "Playfair Display", serif;
 }
 
 .product-card:hover .product-media .badge.soldout::after {

@@ -13,6 +13,18 @@ import { Link, useNavigate } from "react-router-dom";
 import { useFavs } from "../context/FavContext";
 import { addToCart, parsePriceKRW } from "../utils/cart";
 
+// ✅ 상세 데이터 import (대표 이미지 매칭용)
+import detailProducts from "../data/detailData.json";
+
+/* ── 공용: 이미지 경로 정리 ── */
+const resolveImg = (src) => {
+  if (!src) return "/img/placeholder.png";
+  if (/^https?:\/\//i.test(src)) return src;
+  return src.startsWith("/")
+    ? src
+    : `${process.env.PUBLIC_URL}/${src.replace(/^\.?\//, "")}`;
+};
+
 /* ── 가격 포매터: 숫자/문자/undefined 모두 안전 처리 ── */
 function formatPrice(value, { withSymbol = true } = {}) {
   if (value == null) return withSymbol ? "₩0" : "0";
@@ -39,7 +51,8 @@ export default function Lighting() {
     () =>
       Array.from(
         { length: 4 },
-        (_, i) => `https://00anuyh.github.io/SouvenirImg/L_ban1img${i + 1}.png`
+        (_, i) =>
+          `https://00anuyh.github.io/SouvenirImg/L_ban1img${i + 1}.png`
       ),
     []
   );
@@ -168,29 +181,54 @@ export default function Lighting() {
 }
 
 function ProductList() {
-  const navigate = useNavigate(); // 👉 모달에서 장바구니로 이동
-  // 디테일 페이지가 준비된 조명 상품 슬러그(예시) = 카논 ID
+  const navigate = useNavigate();
+
+  // ✅ 상세 JSON → slug: 대표이미지 매핑
+  const galleryMap = useMemo(() => {
+    const m = new Map();
+    const arr = Array.isArray(detailProducts) ? detailProducts : [];
+    for (const it of arr) {
+      const slug = String(it?.id ?? "");
+      const first = Array.isArray(it?.gallery) ? it.gallery[0] : "";
+      if (slug && first) m.set(slug, resolveImg(first));
+    }
+    return m;
+  }, []);
+
+  // 조명 카테고리에서 상세 연결할 슬러그만 지정
   const DETAIL_SLUGS = ["lamp-amber-001", "lamp-amber-002"];
 
-  const items = useMemo(
-    () =>
-      Array.from({ length: 60 }, (_, i) => {
-        const slug = DETAIL_SLUGS[i % DETAIL_SLUGS.length];
-        return {
-          uiKey: `lighting-${slug}-${i + 1}`, // ✅ React 렌더링 전용 키
-          id: slug,                             // ✅ 카논 ID(=slug) ← 즐겨찾기/장바구니 병합 기준
-          slug,
-          name: "앰버 램프",
-          price: "₩49,000",
-          src: `https://00anuyh.github.io/SouvenirImg/L_sec1img${(i % 9) + 1}.png`,
-          soldout: i === 3 || i === 8 || i === 18 || i === 36,
-        };
-      }),
-    []
-  );
+  // ✅ 리스트 생성: 앞쪽은 상세 연결+대표이미지, 나머지는 시퀀스+가짜ID
+  const items = useMemo(() => {
+    const TOTAL = 60;
+    const list = [];
+
+    for (let i = 0; i < TOTAL; i++) {
+      const hasDetail = i < DETAIL_SLUGS.length; // 첫 N개만 상세 연결
+      const detailSlug = hasDetail ? DETAIL_SLUGS[i] : null;
+
+      const fallbackSrc = `https://00anuyh.github.io/SouvenirImg/L_sec1img${
+        (i % 9) + 1
+      }.png`;
+      const realSrc = detailSlug ? galleryMap.get(detailSlug) : null;
+
+      list.push({
+        uiKey: `lighting-${i + 1}`, // ✅ React 렌더링 전용 키
+        id: hasDetail ? detailSlug : `lighting-seq-${i + 1}`, // ✅ 카논 ID(상세 없으면 고유 가짜 ID)
+        slug: detailSlug, // 상세 없으면 null
+        name: "앰버 램프",
+        price: "₩49,000",
+        src: realSrc || fallbackSrc, // ✅ 상세 있으면 대표, 없으면 시퀀스
+        matched: !!realSrc, // 스타일용
+        soldout: i === 3 || i === 8 || i === 18 || i === 36,
+      });
+    }
+    return list;
+  }, [galleryMap]);
 
   const STEP = 8;
   const [showing, setShowing] = useState(STEP);
+  const visible = items.slice(0, showing);
 
   // ✅ 즐겨찾기 컨텍스트
   const { hasFav, toggleFav } = useFavs();
@@ -206,48 +244,29 @@ function ProductList() {
   // ✅ 장바구니 모달
   const [showModal, setShowModal] = useState(false);
 
-  // ✅ 장바구니 담기 (Objects와 동일한 패턴)
+  // ✅ 장바구니 담기 (Objects/LifeStyle와 동일)
   const handleAdd = (p) => (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     const basePrice = parsePriceKRW(p.price);
-    addToCart({
-      id: p.id,
-      slug: p.slug,
-      name: p.name,
-      price: basePrice,
-      basePrice,
-      optionId: null,            // 옵션이 같아도
-      optionLabel: "기본 구성",
-      thumb: p.src,              // ← 이미지가 다르면 병합키가 달라짐
-      delivery: 0,
-    }, 1);
+    addToCart(
+      {
+        id: p.id, // 상세 없으면 lighting-seq-N
+        slug: p.slug ?? undefined,
+        name: p.name,
+        price: basePrice,
+        basePrice,
+        optionId: null,
+        optionLabel: "기본 구성",
+        thumb: p.src, // 이미지가 다르면 병합키가 달라짐
+        delivery: 0,
+      },
+      1
+    );
 
-    setShowModal(true); // 모달 오픈
+    setShowModal(true);
   };
-
-  const HEART = (filled = false) => (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="M12.1 21s-6.4-4.2-9-6.8A5.8 5.8 0 0 1 12 6a5.8 5.8 0 0 1 8.9 8.3c-2.6 2.7-8.8 6.7-8.8 6.7z"
-        fill={filled ? "currentColor" : "none"}
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-
-  const BAG = (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M6 8h12l-1.2 12H7.2L6 8z" fill="none" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M9 8V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-
-  const visible = items.slice(0, showing);
 
   return (
     <section className="section">
@@ -260,20 +279,37 @@ function ProductList() {
 
         <ul className="product-grid">
           {visible.map((p) => {
-            const isFav = hasFav(p.id); // ✅ slug 기준
+            const isFav = hasFav(p.id);
+
+            // 👇 클릭(링크) 가능 여부와 품절 여부를 분리
+            const hasDetail = !!p.slug;        // 상세 페이지로 이동 가능?
+            const isSoldOut = !!p.soldout;     // 품절?
+
+            // 상세가 있을 때만 Link, 없으면 div (← “준비중”과 “품절”을 구분)
+            const MediaWrap = hasDetail ? Link : "div";
+            const mediaProps = hasDetail
+              ? { to: `/detail/${p.slug}`, className: "product-media" }
+              : {
+                  className: "product-media",
+                  onClick: (e) => e.preventDefault(),
+                  title: "상세 페이지 준비중입니다",
+                };
 
             return (
-              <li className="product-card" key={p.uiKey}>
-                <Link to={`/detail/${p.slug}`} className="product-media">
+              <li
+                className={`product-card ${p.matched ? "matched" : ""}`}
+                key={p.uiKey}
+                data-soldout={isSoldOut ? "true" : "false"}
+              >
+                <MediaWrap {...mediaProps}>
                   <img src={p.src} alt={p.name} loading="lazy" />
-                  {p.soldout && <span className="badge soldout" aria-hidden="true" />}
+                  {isSoldOut && <span className="badge soldout" aria-hidden="true" />}
 
-                  {/* 캡션(겹침 방지) */}
                   <div className="product-caption">
                     <span className="product-name">{p.name}</span>
                     <span className="product-price">{formatPrice(p.price)}</span>
                   </div>
-                </Link>
+                </MediaWrap>
 
                 {/* 찜 */}
                 <button
@@ -285,27 +321,53 @@ function ProductList() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    toggleFav(p); // ✅ p.id(=slug) 기준으로 토글
+                    toggleFav(p);
                     setToast(isFav ? "즐겨찾기를 해제했어요" : "즐겨찾기에 추가했어요");
                   }}
                 >
-                  {HEART(isFav)}
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M12.1 21s-6.4-4.2-9-6.8A5.8 5.8 0 0 1 12 6a5.8 5.8 0 0 1 8.9 8.3c-2.6 2.7-8.8 6.7-8.8 6.7z"
+                      fill={isFav ? "currentColor" : "none"}
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 </button>
 
-                {/* 장바구니 */}
+                {/* 장바구니: 품절만 막고, 상세 없음이어도 담기는 유지(원하면 유지) */}
                 <button
-                  className="icon-btn cart"
+                  className={`icon-btn cart ${isSoldOut ? "is-disabled" : ""}`}
                   type="button"
                   aria-label="장바구니 담기"
-                  title="장바구니 담기"
-                  onClick={handleAdd(p)}
+                  aria-disabled={isSoldOut ? "true" : "false"}
+                  title={isSoldOut ? "품절된 상품입니다" : "장바구니 담기"}
+                  disabled={isSoldOut}
+                  onClick={!isSoldOut ? handleAdd(p) : undefined}
                 >
-                  {BAG}
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M6 8h12l-1.2 12H7.2L6 8z"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                    />
+                    <path
+                      d="M9 8V6a3 3 0 0 1 6 0v2"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                    />
+                  </svg>
                 </button>
               </li>
             );
           })}
         </ul>
+
 
         <div className="more">
           {showing < items.length && (
@@ -320,7 +382,7 @@ function ProductList() {
         </div>
       </div>
 
-      {/* ✅ 장바구니 모달 (Objects와 동일한 UX) */}
+      {/* ✅ 장바구니 모달 */}
       {showModal && (
         <div
           className="cart-modal"
@@ -398,7 +460,7 @@ function ProductList() {
         aria-live="polite"
         style={{
           position: "fixed",
-          left:"50%",
+          left: "50%",
           bottom: "50%",
           transform: `translate(-50%, ${toast ? "-50%" : "calc(-50% + 6px)"})`,
           background: "#5e472f",

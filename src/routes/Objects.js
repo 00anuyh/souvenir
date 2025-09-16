@@ -259,29 +259,40 @@ function ProductList() {
           {visible.map((p) => {
             const isFav = hasFav(p.id);
 
-            const MediaWrap = p.slug ? Link : "div";
-            const mediaProps = p.slug
+            const hasDetail = !!p.slug;        // 상세 페이지 존재?
+            const isSoldOut = !!p.soldout;     // 품절?
+            const isClickable = hasDetail && !isSoldOut; // 링크 허용 조건
+
+            const MediaWrap = isClickable ? Link : "div";
+            const mediaProps = isClickable
               ? { to: `/detail/${p.slug}`, className: "product-media" }
-              : { className: "product-media", onClick: (e) => e.preventDefault() };
+              : hasDetail
+              ? { // 상세는 있으나 품절 → 클릭 막고 비활성 스타일
+                  className: "product-media is-disabled",
+                  onClick: (e) => e.preventDefault(),
+                  "aria-disabled": true,
+                  tabIndex: -1,
+                  title: "품절된 상품입니다",
+                }
+              : { // 상세가 아예 없음(준비중) → 품절처럼 보이지 않게
+                  className: "product-media",
+                  onClick: (e) => e.preventDefault(),
+                  title: "상세 페이지 준비중입니다",
+                };
 
             return (
               <li
                 className={`product-card ${p.matched ? "matched" : ""}`}
                 key={p.uiKey}
+                data-soldout={isSoldOut ? "true" : "false"}
               >
-                {/* 상세가 있을 때만 Link, 없으면 단순 div */}
                 <MediaWrap {...mediaProps}>
                   <img src={p.src} alt={p.name} loading="lazy" />
-                  {p.soldout && (
-                    <span className="badge soldout" aria-hidden="true" />
-                  )}
+                  {isSoldOut && <span className="badge soldout" aria-hidden="true" />}
 
-                  {/* 텍스트 캡션 */}
                   <div className="product-caption">
                     <span className="product-name">{p.name}</span>
-                    <span className="product-price">
-                      {formatPrice(p.price)}
-                    </span>
+                    <span className="product-price">{formatPrice(p.price)}</span>
                   </div>
                 </MediaWrap>
 
@@ -295,12 +306,8 @@ function ProductList() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    toggleFav(p); // p.id(= slug 또는 objects-seq-N) 기준으로 토글
-                    setToast(
-                      isFav
-                        ? "즐겨찾기를 해제했어요"
-                        : "즐겨찾기에 추가했어요"
-                    );
+                    toggleFav(p); 
+                    setToast(isFav ? "즐겨찾기를 해제했어요" : "즐겨찾기에 추가했어요");
                   }}
                 >
                   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -315,13 +322,15 @@ function ProductList() {
                   </svg>
                 </button>
 
-                {/* 장바구니 */}
+                {/* 장바구니: 품절만 비활성 */}
                 <button
-                  className="icon-btn cart"
+                  className={`icon-btn cart ${isSoldOut ? "is-disabled" : ""}`}
                   type="button"
                   aria-label="장바구니 담기"
-                  title="장바구니 담기"
-                  onClick={handleAdd(p)}
+                  aria-disabled={isSoldOut ? "true" : "false"}
+                  title={isSoldOut ? "품절된 상품입니다" : "장바구니 담기"}
+                  disabled={isSoldOut}
+                  onClick={!isSoldOut ? handleAdd(p) : undefined}
                 >
                   <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path
@@ -343,6 +352,7 @@ function ProductList() {
             );
           })}
         </ul>
+
 
         <div className="more">
           {showing < items.length && (
