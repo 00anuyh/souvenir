@@ -7,7 +7,11 @@ const Chatbot = ({ onClose }) => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [ChatbotData, setChatbotData] = useState(null);
+
   const messagesEndRef = useRef(null);
+  const keywordRef = useRef(null);
+
+  const KEYWORDS = ["교환", "배송", "환불", "사이즈", "쿠폰", "회원가입", "이벤트", "결제"];
 
   // 푸터 겹침 보정값(px)
   const [avoidFooterOffset, setAvoidFooterOffset] = useState(0);
@@ -46,27 +50,39 @@ const Chatbot = ({ onClose }) => {
     })();
   }, []);
 
-  /* -------------------- 전송 로직 -------------------- */
-  const handleSendMessage = () => {
-    if (!inputMessage.trim() || !ChatbotData) return;
-
-    const userMessage = { type: "user", text: inputMessage };
+  /* -------------------- 챗봇 응답 찾기 -------------------- */
+  const findBotResponse = (query) => {
+    if (!ChatbotData) return null;
+    const q = query.toLowerCase().trim();
     const found = ChatbotData.responses.find((item) =>
-      inputMessage.toLowerCase().trim().includes(item.keyword.toLowerCase().trim())
+      q.includes(item.keyword.toLowerCase().trim())
     );
-    const botMessage = {
-      type: "bot",
-      text: found ? found.response : ChatbotData.defaultResponse,
-    };
+    return found ? found.response : ChatbotData.defaultResponse;
+  };
+
+  /* -------------------- 전송(공통) -------------------- */
+  const sendMessage = (text) => {
+    const q = String(text || "").trim();
+    if (!q || !ChatbotData) return;
+
+    const userMessage = { type: "user", text: q };
+    const botMessage = { type: "bot", text: findBotResponse(q) };
 
     setMessages((prev) => [...prev, userMessage, botMessage]);
     setInputMessage("");
-
-    // 입력으로 높이가 늘어날 수 있으니 재계산
     requestAnimationFrame(recalcFooterOverlap);
   };
 
-  const handleKeyDown = (e) => e.key === "Enter" && handleSendMessage();
+  /* -------------------- 전송 로직 -------------------- */
+  const handleSendMessage = () => sendMessage(inputMessage);
+  const handleKeyDown = (e) => {
+    // IME(한글) 조합 중, 혹은 Shift+Enter는 줄바꿈만
+    if (e.isComposing) return;
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
 
   /* -------------------- ESC 닫기 -------------------- */
   useEffect(() => {
@@ -75,13 +91,7 @@ const Chatbot = ({ onClose }) => {
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  /* -------------------- 모달 오픈 시 푸터 재계산 강화 --------------------
-     - 마운트 즉시
-     - 다음 프레임
-     - 200ms 후(레이아웃 안정화 대비)
-     - 스크롤/리사이즈/푸터 ResizeObserver
-     - 컨테이너 내부 이미지 로딩 시
-  ------------------------------------------------------------------- */
+  /* -------------------- 모달 오픈 시 푸터 재계산 강화 -------------------- */
   useEffect(() => {
     // 1) 즉시
     recalcFooterOverlap();
@@ -125,6 +135,24 @@ const Chatbot = ({ onClose }) => {
     };
   }, []);
 
+  /* -------------------- 키워드 컨테이너: 마우스 휠 → 가로 스크롤 -------------------- */
+  useEffect(() => {
+    const el = keywordRef.current;
+    if (!el) return;
+
+    const onWheel = (e) => {
+      if (e.deltaY === 0) return; // 세로 스크롤 없으면 무시
+      e.preventDefault();
+      el.scrollBy({
+        left: e.deltaY, // 세로 휠 값 → 가로 스크롤로 변환
+        behavior: "smooth",
+      });
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
   return (
     <div
       className="chatbot-container"
@@ -163,12 +191,23 @@ const Chatbot = ({ onClose }) => {
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <div className="keyword-container">
-        <div className="chat-keyword">교환</div>
-        <div className="chat-keyword">배송</div>
-        <div className="chat-keyword">환불</div>
-        <div className="chat-keyword">사이즈</div>
-        <div className="chat-keyword">쿠폰</div>
+
+      <div
+        ref={keywordRef}
+        className="keyword-container"
+        aria-label="빠른 질문 키워드"
+      >
+        {KEYWORDS.map((kw) => (
+          <button
+            key={kw}
+            type="button"
+            className="chat-keyword"
+            onClick={(e) => (e.shiftKey ? setInputMessage(kw) : sendMessage(kw))} // Shift+클릭=입력창만
+            disabled={!ChatbotData}
+          >
+            {kw}
+          </button>
+        ))}
       </div>
 
       <div className="input-container">
@@ -179,7 +218,7 @@ const Chatbot = ({ onClose }) => {
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyDown={handleKeyDown}
         />
-        <button onClick={handleSendMessage} aria-label="메세지 전송">
+        <button onClick={handleSendMessage} aria-label="메세지 전송" disabled={!ChatbotData}>
           <img
             src="https://00anuyh.github.io/SouvenirImg/a_event_wh_logo.png"
             width={15}

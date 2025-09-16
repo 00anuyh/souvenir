@@ -82,11 +82,12 @@ h3 {
   /* JS가 필요시 값 업데이트 */
 }
 
+
 /* 플로팅 아이콘 */
 .floating-ask {
   position: fixed;
   right: 30px;
-  bottom: calc(var(--fab-base-bottom) + var(--fab-push-up));
+  bottom: 20px;
   z-index: 5000;
   transition: bottom .2s ease, transform .2s ease, opacity .2s ease;
   display: inline-flex;
@@ -109,8 +110,6 @@ h3 {
   opacity: 0;
   pointer-events: none;
 }
-
-
 
 .body-wrap {
   display: flex;

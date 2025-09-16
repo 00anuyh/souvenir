@@ -91,19 +91,52 @@
     align-self: flex-start;
     text-align: left;
     position: relative;
+    line-height: 120%;
 }
 
 .keyword-container {
+    width: 100%;
+    padding: 2px 10px;
     display: flex;
     flex-direction: row;
     gap: 10px;
+    margin: 10px auto;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+
+    scrollbar-width: none;
+    /* Firefox */
+    scroll-snap-type: x proximity;
+    /* 슬라이드 느낌 */
 }
+
+.keyword-container::-webkit-scrollbar {
+    display: none;
+}
+
 
 .keyword-container .chat-keyword {
     border-radius: 50px;
     width: auto;
-    min-width: 80px;
+    height: 25px;
+    min-width: 65px;
+    background-color: #fff;
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+    flex: 0 0 auto;
+    /* 줄바꿈 방지 */
+    scroll-snap-align: start;
+    cursor: pointer;
+}
+
+.keyword-container .chat-keyword:hover {
+    background-color: #5E472F;
+    color: #fff;
 }
 
 .input-container {
