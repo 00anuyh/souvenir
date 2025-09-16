@@ -13,7 +13,7 @@ import detailProducts from "../data/detailData.json";
 /* ───── 공용: 이미지 경로 정리 ───── */
 const resolveImg = (src) => {
   if (!src) return "/img/placeholder.png";
-  if (/^https?:\/\//i.test(src)) return src;
+  if (/^https?:\/\//i.test(src)) return src; 
   return src.startsWith("/")
     ? src
     : `${process.env.PUBLIC_URL}/${src.replace(/^\.?\//, "")}`;
@@ -38,7 +38,7 @@ function formatPrice(value, { withSymbol = true } = {}) {
 }
 
 export default function LifeStyle() {
-  const heroRef = useRef(null);
+  const heroRef = useRef(null); 
   const [active, setActive] = useState(0);
 
   // 히어로 이미지 (Lifestyle 전용 경로로 교체)

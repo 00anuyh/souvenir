@@ -3,7 +3,6 @@ import "../css/Lighting.css";
 
 import React, {
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
   useMemo,
@@ -73,7 +72,7 @@ export default function Lighting() {
   );
 
   // 레이아웃 계산은 layoutEffect로 (FOUC 방지)
-  useLayoutEffect(() => {
+  useEffect(() => {
     const scope = heroRef.current;
     if (!scope) return;
 
@@ -83,11 +82,7 @@ export default function Lighting() {
     const CC_GAP = 60;
 
     const applyPositions = () => {
-      order = Array.from(scope.querySelectorAll(".decor, .square")).sort(
-        (a, b) => Number(a.dataset.order ?? 0) - Number(b.dataset.order ?? 0)
-      );
-
-      const widths = order.map((el) => el.getBoundingClientRect().width || 0);
+      const widths = order.map((el) => el.getBoundingClientRect().width);
       let r = BASE_RIGHT;
 
       order.forEach((el, i) => {
@@ -97,7 +92,6 @@ export default function Lighting() {
         el.style.position = "absolute";
         el.style.top = "50%";
         el.style.left = `${r}px`;
-        el.style.transform = "translateY(-50%)";
       });
     };
 
