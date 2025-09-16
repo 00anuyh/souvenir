@@ -1,3 +1,9 @@
+.bestwrap {
+    width: 100%;
+    height: auto;
+}
+
+
 .besttitle {
     width: 100%;
     display: flex;

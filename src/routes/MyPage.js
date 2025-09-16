@@ -11,14 +11,13 @@ import { getProfilePic, setProfilePic, clearProfilePic } from "../utils/profileP
 import { HiBell } from "react-icons/hi2";
 import { FaGear } from "react-icons/fa6";
 
-
 import "../css/mypage.css";
 import GiftModal from "../components/GiftModal";
 import CouponModal from "../components/CouponModal";
 
 const KEY_BASE = "souvenirEventResult";
 const keyFor = (uid) => (uid ? `${KEY_BASE}:${uid}` : KEY_BASE);
-const CDN = "https://00anuyh.github.io/SouvenirImg/"; // ✅ trailing slash 추가
+const CDN = "https://00anuyh.github.io/SouvenirImg/"; // ✅ trailing slash
 
 const fmt = (d) => {
   const date = new Date(d);
@@ -33,25 +32,23 @@ const addDays = (d, n) => {
   return x;
 };
 
-
-
 // ✅ 절대/로컬/상대 경로 모두 안전하게 처리
 const resolveImg = (src) => {
   const p = String(src || "");
-  if (!p) return `${CDN}Best_img1.png`;                           // 폴백은 CDN 이미지로
-  if (/^https?:\/\//i.test(p)) return p;                          // 절대 URL은 그대로
-  if (p.startsWith("/img/")) return `${process.env.PUBLIC_URL}${p}`; // 앱 정적자원은 PUBLIC_URL 기준
-  return `${CDN}${p.replace(/^\.?\//, "")}`;                      // 상대경로는 CDN에 붙이되 ./, / 제거
+  if (!p) return `${CDN}Best_img1.png`;
+  if (/^https?:\/\//i.test(p)) return p;
+  if (p.startsWith("/img/")) return `${process.env.PUBLIC_URL}${p}`;
+  return `${CDN}${p.replace(/^\.?\//, "")}`;
 };
 
 // cart_v1 기반 보조 변환기 (저장소가 비었을 때만 사용)
 function ordersFromCart() {
-  const cart = getCart(); // [{ key, name, thumb, price, delivery, qty, purchasedAt, lastOrderId, ... }]
+  const cart = getCart();
   const tagged = (cart || []).filter((it) => it.purchasedAt && it.lastOrderId);
 
   const map = new Map();
   for (const it of tagged) {
-    const id = String(it.lastOrderId); // 주문번호는 그대로 사용
+    const id = String(it.lastOrderId);
     const g =
       map.get(id) ||
       {
@@ -63,10 +60,9 @@ function ordersFromCart() {
         status: "결제완료",
       };
 
-    // 카트 라인 → 주문 라인아이템으로 변환
     const item = {
       title: it.name || it.title || "-",
-      image: it.image || it.thumb || null, // ★ 없으면 thumb 사용
+      image: it.image || it.thumb || null,
       optionLabel: it.optionLabel || "",
       qty: Number(it.qty || 1),
       unitPrice: Number(it.price ?? it.unitPrice ?? it.basePrice ?? 0),
@@ -94,7 +90,6 @@ function ordersFromCart() {
     map.set(id, g);
   }
 
-  // purchasedAt 내림차순
   return Array.from(map.values()).sort((a, b) => b.purchasedAt - a.purchasedAt);
 }
 
@@ -124,11 +119,19 @@ const MyPage = () => {
     return s?.username || s?.userid || null;
   };
 
+  // ✅ 로그인 요구 헬퍼: 미로그인 시 얼럿 + 이동 옵션
+  const requireAuth = (goLogin = true) => {
+    if (isAuthed) return true;
+    alert("프로필 사진은 로그인 후 변경할 수 있습니다.");
+    if (goLogin) navigate("/login");
+    return false;
+  };
+
   const refreshPageData = () => {
     const uid = getUid();
 
-     // 프로필도 같이 최신화
- setProfilePicState(getProfilePic(uid));
+    // 프로필도 같이 최신화
+    setProfilePicState(getProfilePic(uid));
 
     // 이벤트
     try {
@@ -157,7 +160,6 @@ const MyPage = () => {
   // ⬇️ 컴포넌트 내부 state 추가
   const [profilePic, setProfilePicState] = useState(null);
 
-  // ⬇️ uid 가져오는 함수(getUid)는 이미 있으니 그대로 사용
   useEffect(() => {
     const uid = getUid();
     setProfilePicState(getProfilePic(uid));
@@ -167,14 +169,18 @@ const MyPage = () => {
   const fileInputRef = useRef(null);
 
   const onPickProfile = () => {
-    if (fileInputRef.current) fileInputRef.current.click();
+    // ✅ 미로그인: 얼럿 후 종료
+    if (!requireAuth(true)) return;
+    fileInputRef.current?.click();
   };
 
   const onFileChange = (e) => {
+    // ✅ 미로그인: 얼럿 후 종료 (URL로 접근하는 등 우회 방지)
+    if (!requireAuth(false)) return;
+
     const uid = getUid();
     const f = e.target.files?.[0];
     if (!uid || !f) return;
-    // 용량주의: localStorage 제한 ~5MB. 큰 이미지는 압축 권장(지금은 바로 저장).
     const reader = new FileReader();
     reader.onload = () => {
       const dataUrl = reader.result; // base64
@@ -185,6 +191,8 @@ const MyPage = () => {
   };
 
   const onResetProfile = () => {
+    // ✅ 미로그인 보호
+    if (!requireAuth(true)) return;
     const uid = getUid();
     clearProfilePic(uid);
     setProfilePicState(null);
@@ -280,7 +288,6 @@ const MyPage = () => {
     [orders]
   );
 
-  // 현재 페이지 아이템(최신순 정렬 유지)
   const pagedOrders = useMemo(() => {
     const arr = Array.isArray(orders) ? [...orders] : [];
     arr.sort((a, b) => toDate(b.date) - toDate(a.date));
@@ -288,7 +295,6 @@ const MyPage = () => {
     return arr.slice(start, start + PER_PAGE);
   }, [orders, page]);
 
-  // 주문 목록이 바뀌면 페이지 범위 보정
   useEffect(() => {
     setPage((p) => Math.min(Math.max(1, p), totalPages));
   }, [totalPages]);
@@ -358,9 +364,9 @@ const MyPage = () => {
                 onClick={handleLogout}
                 className="a_nav-logout"
                 style={{
-                  color: "#fff", 
-                  cursor: "pointer", 
-                  borderRadius: 5, 
+                  color: "#fff",
+                  cursor: "pointer",
+                  borderRadius: 5,
                   padding: 3,
                 }}
               >
@@ -374,8 +380,12 @@ const MyPage = () => {
             {/* 프로필 */}
             <div className="a_profile">
               {/* 프로필 이미지 박스 */}
-              <div className="a_profile-img" onClick={onPickProfile} style={{ cursor: "pointer" }}>
-              
+              <div
+                className={`a_profile-img ${isAuthed ? "" : "is-locked"}`}
+                onClick={onPickProfile}
+                style={{ cursor: isAuthed ? "pointer" : "not-allowed" }}
+                title={isAuthed ? "프로필 사진 변경" : "로그인 후 변경할 수 있습니다"}
+              >
                 {profilePic ? (
                   <img
                     src={profilePic}
@@ -396,6 +406,11 @@ const MyPage = () => {
                 onChange={onFileChange}
                 style={{ display: "none" }}
               />
+
+              {/* (선택) 초기화 버튼이 있으면 이 핸들러를 연결하세요
+                  <button type="button" onClick={onResetProfile}>프로필 초기화</button>
+              */}
+
               <div className="a_nickname">
                 {loggedIn ? <span>{user?.name || "회원"}</span> : <Link to="/login">로그인이 필요합니다</Link>}
               </div>
@@ -450,9 +465,9 @@ const MyPage = () => {
                 tabIndex={0}
                 title="쿠폰 내역 보기"
                 onClick={() => {
-                  if (rewards.coupons <= 0) return; // 보유 0이면 열지 않음
-                  setOpen(false); // GiftModal 닫기 (겹침 방지)
-                  setOpenCoupon(true); // ✅ 쿠폰 모달 열기
+                  if (rewards.coupons <= 0) return;
+                  setOpen(false);
+                  setOpenCoupon(true);
                 }}
                 onKeyDown={(e) => {
                   if (rewards.coupons <= 0) return;
@@ -488,7 +503,7 @@ const MyPage = () => {
 
                 {pagedOrders.map((o) => {
                   const first = o.items?.[0] || {};
-                  const img = resolveImg(first.image || first.thumb); // ★ thumb도 폴백 + 상대경로 보정
+                  const img = resolveImg(first.image || first.thumb);
                   const when = (o.date || "").replaceAll("-", ".");
                   const total = o.totals?.grandTotal ?? 0;
 
@@ -506,7 +521,7 @@ const MyPage = () => {
                             src={img}
                             alt="ordered"
                             onError={(e) => {
-                              e.currentTarget.src = `${CDN}Best_img1.png`; // ✅ CDN 폴백
+                              e.currentTarget.src = `${CDN}Best_img1.png`;
                             }}
                             style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8 }}
                           />

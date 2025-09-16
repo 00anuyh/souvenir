@@ -8,6 +8,7 @@
   font-style: normal;
 }
 
+/* ========== Reset ========== */
 * {
   margin: 0;
   padding: 0;
@@ -16,9 +17,9 @@
   box-sizing: border-box;
 }
 
+/* ========== Base ========== */
 body {
   cursor: url("https://00anuyh.github.io/SouvenirImg/mouse.png") 3 3, auto;
-  min-width: 1440px;
 }
 
 /* 부드러운 스크롤 */
@@ -68,11 +69,11 @@ h3 {
   font-family: "Playfair Display", serif;
 }
 
+/* 라우트 컨텐츠 래퍼 */
 .Warp {
   max-width: 1440px;
   margin: 0 auto;
 }
-
 
 /* 전역 변수: 기본 여백 + 푸터 겹침 보정 */
 :root {
@@ -103,9 +104,40 @@ h3 {
   transition: bottom .2s ease, transform .2s ease, opacity .2s ease;
 }
 
-/* 모달이 열릴 때 아이콘만 숨기고(사라지는 문제와 무관), 
-   푸터 보정과는 관련없도록 별개 상태로 둡니다. */
+/* 모달이 열릴 때 아이콘만 숨김(푸터 보정과 무관) */
 .floating-ask.hidden {
   opacity: 0;
   pointer-events: none;
+}
+
+
+
+.body-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* ✅ 화면 전체 높이 확보 */
+
+}
+
+/* Warp(메인 컨텐츠) 영역은 자동 확장 */
+.Warp {
+  flex: 1;
+  /* ✅ 남는 높이 채워서 footer 아래로 밀기 */
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+footer {
+  flex-shrink: 0;
+  /* ✅ 줄어들지 않고 항상 아래에 위치 */
+  width: 100%;
+  background: #fff7e4;
+  /* 원하는 배경색 */
+  border-top: 1px solid #ddd;
+  padding: 30px 20px;
+  /* 적절한 패딩 */
+  box-sizing: border-box;
+  z-index: 10;
 }

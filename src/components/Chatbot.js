@@ -145,7 +145,7 @@ const Chatbot = ({ onClose }) => {
       </div>
 
       <button onClick={onClose} aria-label="채팅 닫기">
-        <IoClose className="Chatbot-Close" style={{ cursor: "pointer"}}/>
+        <IoClose className="Chatbot-Close" style={{ cursor: "pointer" }} />
       </button>
 
       <div className="chat-notice">
@@ -162,6 +162,13 @@ const Chatbot = ({ onClose }) => {
           </div>
         ))}
         <div ref={messagesEndRef} />
+      </div>
+      <div className="keyword-container">
+        <div className="chat-keyword">교환</div>
+        <div className="chat-keyword">배송</div>
+        <div className="chat-keyword">환불</div>
+        <div className="chat-keyword">사이즈</div>
+        <div className="chat-keyword">쿠폰</div>
       </div>
 
       <div className="input-container">

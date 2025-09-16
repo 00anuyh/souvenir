@@ -255,7 +255,7 @@ export default function App() {
 
       {/* 스플래시가 끝난 뒤에만 실제 앱 렌더 */}
       {!showSplash && (
-        <>
+        <div className="body-wrap">
           <ScrollToTop />
 
           <div className="Warp">
@@ -320,7 +320,7 @@ export default function App() {
           )}
 
           <Footer />
-        </>
+        </div>
       )}
     </>
   );

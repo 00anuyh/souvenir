@@ -40,7 +40,6 @@
   width: 550px;
   height: 500px;
   border-radius: 5px;
-  background-color: #5e472f;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -71,7 +70,7 @@
   width: 60px;
   height: 55px;
   margin-right: 30px;
-  background-color: #5e472f;
+  background-color: #06301a;
   cursor: pointer;
 
 
@@ -81,7 +80,7 @@
 }
 
 .sub-photo-box .pm-item:hover {
-  background-color: #fff7e4;
+  background-color: #5e472f;
 }
 
 .sub-photo-box .pm-item span {

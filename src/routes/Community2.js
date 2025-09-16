@@ -114,7 +114,7 @@ const SouvenirCommunity = () => {
   };
 
   return (
-    <div className="warp1">
+    <div className="warp1" style={{ width: "100%", margin: "0 auto", height: "100vh"  }}>
       <div className="toptitle">
         <div className="titleleft" />
         <h2>Community</h2>
@@ -125,11 +125,11 @@ const SouvenirCommunity = () => {
         {/* 좌측: 사진 업로드 영역 */}
         <div className="community-content-l">
           <div
-            className="insert-photo"
+            className="insert-photo2"
             style={{
               width: "100%",
               height: "525px",
-              backgroundColor: "#5e472f",
+              border: "1px solid #06301a",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -142,9 +142,9 @@ const SouvenirCommunity = () => {
                 style={{ width: "100%", height: "100%", objectFit: "contain" }}
               />
             ) : (
-              <p style={{ fontSize: "25px", color: "#fff" }}>
+              <p style={{ fontSize: "25px", color: "#06301a" }}>
                 사진을 첨부하세요{" "}
-                <RiImageAddFill style={{ fontSize: "23px", color: "#fff" }} />
+                <RiImageAddFill style={{ fontSize: "23px", color: "#06301a" }} />
               </p>
             )}
           </div>
@@ -158,7 +158,7 @@ const SouvenirCommunity = () => {
                 style={{
                   width: "60px",
                   height: "60px",
-                  backgroundColor: "#5e472f",
+                  backgroundColor: "#06301a",
                   border: "1px solid #ccc",
                   borderRadius: "5px",
                   overflow: "hidden",
@@ -190,7 +190,7 @@ const SouvenirCommunity = () => {
               onClick={handleAddSlot}
               style={{ width: "60px", height: "60px", borderRadius: "5px", color: "#fff" }}
             >
-              슬롯 추가
+              추가
             </button>
             <button
               type="button"
@@ -198,7 +198,7 @@ const SouvenirCommunity = () => {
               onClick={handleRemoveSlot}
               style={{ width: "60px", height: "60px", borderRadius: "5px", color: "#fff" }}
             >
-              슬롯 삭제
+              삭제
             </button>
           </div>
         </div>

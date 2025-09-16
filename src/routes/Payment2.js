@@ -367,7 +367,7 @@ export default function Payment2() {
   const etaStr = ymd(addBusinessDays(purchasedAt, 3)); // 3영업일 이내
 
   return (
-    <div id="cart-wrap">
+    <div id="cart-wrap" style={{ width: "100%", margin: "0 auto", height: "100vh"  }}>
       {/* 진행바 */}
       <div id="payment-progress">
         <ul>

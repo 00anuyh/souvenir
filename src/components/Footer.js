@@ -8,8 +8,7 @@ const Footer = () => {
                 <div id="topfoo">
                     <div className="foocenter">
                         <p className="footitle">고객센터 &gt;</p>
-                        <p className="foophone">1670-1234</p>
-                        <p className="footime">운영시간 : 09:00 ~ 18:00</p>
+                        <p className="foophone"><span style={{ fontWeight:"bold"}}>1670-1234</span> {"\u00A0\u00A0"} 운영시간 : 09:00 ~ 18:00</p>
                     </div>
                     <div className="foosocial">
                         <span className="foocircle"><img src='https://00anuyh.github.io/SouvenirImg/sns_logo1.png' alt='sns_logo1'></img></span>

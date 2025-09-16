@@ -36,7 +36,7 @@ export default function NewsCard({
       {/* 매체/시간 */}
       <div className="news-meta">
         <span className="logo" aria-hidden="true" />
-        <span>{source}</span>
+        <span>https://newsapi.org/v2/everything/{source}</span>
         <span className="sep">·</span>
         <span>{time}</span>
       </div>

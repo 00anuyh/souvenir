@@ -90,7 +90,7 @@ const Favorites = () => {
  
   return (
     <LikeBox>
-      <div className="fav-wrap">
+      <div className="fav-wrap" style={{ width: "100%", margin: "0 auto", height: "100vh"  }}>
         <div className="fav-container">
           <div className="toptitle">
             <div className="titleleft" />

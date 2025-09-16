@@ -139,7 +139,7 @@ export default function Best() {
   );
 
   return (
-    <>
+    <div className="bestwrap">
       <div className="bestBanner">
         <Swiper
           className="mySwiper"
@@ -190,7 +190,7 @@ export default function Best() {
                     <span className="product-name">{p.name}</span>
                     <span className="product-price">{formatPrice(p.price)}</span>
                   </div>
-</Link>
+                </Link>
 
                 {/* 찜 */}
                 <button
@@ -328,6 +328,6 @@ export default function Best() {
       >
         {toast}
       </div>
-    </>
+    </ div>
   );
 }

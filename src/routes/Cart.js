@@ -137,7 +137,7 @@ export default function Cart() {
   const selectedLineItems = items.filter((it) => it.checked);
 
   return (
-    <div className="warp1">
+    <div className="warp1" style={{ width: "100%", margin: "0 auto", height: "100vh"  }}>
       {/* 결제 단계 표시 */}
       <div id="payment-progress">
         <ul>

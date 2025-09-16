@@ -105,7 +105,7 @@ export default function Login() {
   };
 
   return (
-    <div id="login-wrap">
+    <div id="login-wrap" style={{ width: "100%", margin: "0 auto", height: "100vh"  }}>
       <main className="login-page">
         <div id="login-progress">
           <ul>

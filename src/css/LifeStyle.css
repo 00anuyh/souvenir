@@ -309,7 +309,7 @@
 /* more 버튼 */
 .more {
     text-align: center;
-    margin-top: 50px;
+    margin: 50px 0;
 }
 
 .btn-more {

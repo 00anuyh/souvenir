@@ -186,7 +186,7 @@ export default function Event() {
   }
 
   return (
-    <div className="a_event_wrap">
+    <div className="a_event_wrap" style={{ width: "100%", margin: "0 auto", height: "100vh"  }}>
       <div className="a_event_container">
         {/* 배너 */}
         <div className="a_event_banner">

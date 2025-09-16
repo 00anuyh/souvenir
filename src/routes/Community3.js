@@ -83,7 +83,7 @@ const Community3 = () => {
   };
 
   return (
-    <div className="warp1">
+    <div className="warp1" style={{ width: "100%", margin: "0 auto", height: "100vh"  }}>
       <div className="toptitle">
         <div className="titleleft" />
         <h2>Community</h2>

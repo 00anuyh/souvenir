@@ -436,7 +436,7 @@ export default function Community() {
 
   /* ===== 렌더 ===== */
   return (
-    <div className="comwarp1">
+    <div className="warp1">
       {/* 뉴스 배너 */}
       <div className="newsBanner">
         {newsLoading ? (
