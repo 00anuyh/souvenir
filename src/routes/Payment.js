@@ -219,7 +219,7 @@ export default function Payment() {
   /* ---------------------- Render ---------------------- */
 
   return (
-    <form onSubmit={onSubmit} style={{ width: "100%", margin: "0 auto", height: "100vh"  }}>
+    <form onSubmit={onSubmit}>
       {/* 진행바 */}
       <div id="payment-progress">
         <ul>
