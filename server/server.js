@@ -1,6 +1,5 @@
 // server/server.js
 import express from 'express';
-import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import bcrypt from 'bcryptjs';
@@ -8,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import cors from 'cors';                       // ⬅️ 누락되어 있던 부분 (필수)
 import { fileURLToPath } from 'url';
 import path from 'path';
 
@@ -18,9 +18,12 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const NEWS_KEY = process.env.NEWS_KEY;
 
-// ---------- 보안/기본 ----------
-app.set('trust proxy', 1); // Render 등 프록시 뒤에서 secure 쿠키 사용시
-app.use(helmet());
+// ---------- 기본/보안 ----------
+app.set('trust proxy', 1); // Render 등 프록시 뒤에서 secure 쿠키 사용 시
+app.use(helmet({
+  // 필요한 경우 API 응답만이면 기본값으로 충분.
+  // 정적 파일을 같이 서빙한다면 crossOriginResourcePolicy 조정 필요.
+}));
 app.use(cookieParser());
 app.use(express.json()); // ✅ 한 번만 등록
 
@@ -40,6 +43,16 @@ app.use(cors({
   credentials: true,
 }));
 
+// 프리플라이트(OPTIONS) 처리
+app.options('*', cors({
+  origin(origin, cb) {
+    if (!origin) return cb(null, true);
+    if (allowList.length === 0 || allowList.includes(origin)) return cb(null, true);
+    return cb(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
+
 // ---------- Health ----------
 app.get('/health', (_req, res) => res.status(200).send('OK'));
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
@@ -52,6 +65,8 @@ const TOKEN_COOKIE = 'admin_token';
 // 시작 로그(모드/이메일 확인용)
 console.log('[ADMIN AUTH] mode:', process.env.ADMIN_PASS_HASH ? 'HASH' : (process.env.ADMIN_PASS ? 'PLAIN' : 'UNSET'));
 console.log('[ADMIN AUTH] email:', String(process.env.ADMIN_EMAIL || '').trim().toLowerCase());
+console.log('[ENV] NODE_ENV=', process.env.NODE_ENV);
+console.log('[ENV] CORS allowList=', allowList);
 
 // 디버그 라우트(민감값 노출 없음)
 app.get('/api/admin/_debug', (_req, res) => {
@@ -159,6 +174,10 @@ const cacheKey = (params) => crypto.createHash('md5').update(JSON.stringify(para
 
 app.get('/api/news', async (req, res) => {
   try {
+    if (!NEWS_KEY) {
+      return res.status(500).json({ status: 'error', message: 'NEWS_KEY missing on server' });
+    }
+
     let q = String(req.query.q || 'interior design').slice(0, 480);
     const lang = String(req.query.lang || '');
     const pageSize = Math.min(Math.max(parseInt(req.query.pageSize || '10', 10), 1), 100);
@@ -182,6 +201,7 @@ app.get('/api/news', async (req, res) => {
     if (fromDays > 0) url.searchParams.set('from', from.toISOString());
     if (lang) url.searchParams.set('language', lang);
 
+    // Node 18+ 에서는 fetch 내장. (만약 Node 16 이면 node-fetch 필요)
     const r = await fetch(url.toString(), { headers: { 'X-Api-Key': NEWS_KEY } });
     const data = await r.json();
 
@@ -189,7 +209,7 @@ app.get('/api/news', async (req, res) => {
       cache.set(key, { t: Date.now(), data });
       return res.status(200).json(data);
     }
-    return res.status(500).json(data);
+    return res.status(r.status || 500).json(data);
   } catch (e) {
     return res.status(500).json({ status: 'error', message: e.message });
   }
@@ -206,6 +226,17 @@ app.get('/', (_req, res) => {
       'News:  /api/news?q=interior&lang=ko&fromDays=30\n' +
       'Debug: /api/admin/_debug\n'
     );
+});
+
+// 404 핸들러
+app.use((req, res) => {
+  res.status(404).json({ ok: false, error: 'NOT_FOUND' });
+});
+
+// 공통 에러 핸들러
+app.use((err, _req, res, _next) => {
+  console.error('[ERROR]', err?.message || err);
+  res.status(500).json({ ok: false, error: 'SERVER_ERROR' });
 });
 
 app.listen(PORT, () => {
