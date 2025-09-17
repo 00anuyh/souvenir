@@ -360,7 +360,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* 👈 핵심: 꽉 채우되 잘릴 수 있음 */
     object-position: center;
     display: block;
 }
@@ -383,6 +382,7 @@
     background: rgba(0, 0, 0, 0);
     transition: background .25s ease;
     z-index: 1;
+    pointer-events: none;
 }
 
 /* 캡션 */

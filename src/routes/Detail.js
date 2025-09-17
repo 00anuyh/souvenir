@@ -145,6 +145,47 @@ export default function Detail() {
   const [profilePic, setProfilePic] = useState(null);
   const fileRef = useRef(null);
 
+  useEffect(() => {
+  if (!navOpen) return;
+
+  const footer = document.querySelector("footer#mainfooter") || document.querySelector("footer");
+  if (!footer) return;
+
+  let closed = false;
+  const closeOnce = () => {
+    if (!closed) {
+      closed = true;
+      setNavOpen(false);
+    }
+  };
+
+  // 1) IntersectionObserver (권장)
+  const io = new IntersectionObserver(
+    (entries) => {
+      if (entries.some((e) => e.isIntersecting)) closeOnce();
+    },
+    {
+      root: null,
+      threshold: 0.01,      // 살짝만 보여도 닫기
+      rootMargin: "0px",    // 푸터가 보이는 즉시
+    }
+  );
+  io.observe(footer);
+
+  // 2) 폴백: 스크롤 체크
+  const onScroll = () => {
+    const r = footer.getBoundingClientRect();
+    if (r.top <= window.innerHeight) closeOnce();
+  };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  return () => {
+    io.disconnect();
+    window.removeEventListener("scroll", onScroll);
+  };
+}, [navOpen]);
+
   // uid 바뀔 때 로드
   useEffect(() => {
     if (!uid) {
@@ -1475,6 +1516,7 @@ export default function Detail() {
 
       {/* 검색 모달 */}
       <Search open={open} onClose={() => setOpen(false)} />
+      
     </div>
   );
 }

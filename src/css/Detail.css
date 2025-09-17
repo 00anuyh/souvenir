@@ -87,39 +87,49 @@
     font-size: 22px;
     line-height: 1;
     padding: 8px;
+    color: #5E472F;
 }
 
 .detail-warp1 #header-right a i,
 .detail-warp1 #hamburger i {
     font-weight: 550;
     font-size: 23px;
+    color: #5E472F;
 }
 
 /* =========================
    Slide Nav (scoped)
    ========================= */
+:root {
+    --header-h: 183px;
+    --footer-h: 485px;
+}
+
 .detail-warp1 #detail-nav {
     position: fixed;
-    top: 30px;
     left: 0;
+    top: var(--header-h);
+    bottom: var(--footer-h);
     width: 13%;
     transform: translateX(-100%);
     transition: transform .28s ease;
-    z-index: 1200;
+    z-index: 1000;
     overflow-y: auto;
-    margin-top: 6px;
-
+    background-color: #fff;
+    height: calc(125vh - var(--footer-h));
 }
 
 .detail-warp1 #detail-nav.open {
     transform: translateX(0);
 }
 
+.detail-warp1 #detail-nav.rvm-close {}
+
 .detail-warp1 #detail-menu1 {
     list-style: none;
     display: flex;
     flex-direction: column;
-    padding: 100px 20px 20px;
+    padding: 20px 10px;
     gap: 18px;
 }
 
@@ -909,5 +919,4 @@
     font-size: 25px;
     background-color: #fff;
     color: #5E472F;
-
 }

@@ -173,7 +173,7 @@ const BestGrid = memo(function BestGrid({ products: raw = [] }) {
   const items = useMemo(() => {
     const list = Array.isArray(raw) ? raw : [];
     return list.map((it, idx) => {
-      const slug = String(it.id ?? String(idx + 1));
+      const slug = String(it.product?.slug ?? it.slug ?? it.id ?? String(idx + 1));
 
       const first = it.gallery?.[0];
       const img = first
@@ -183,6 +183,7 @@ const BestGrid = memo(function BestGrid({ products: raw = [] }) {
         : `${CDN}Best_img${(idx % 5) + 1}.png`;
 
       return {
+        uiKey: `best-${slug}`,
         id: slug,
         slug,
         name: it.product?.name ?? "",
@@ -247,21 +248,24 @@ const BestGrid = memo(function BestGrid({ products: raw = [] }) {
       <h3>BEST</h3>
 
       <ul className="main-grid">
-        {visible.map((p, idx) => {
+        {visible.map((p, i) => {
           const liked = hasFav(p.id);
-          const fallbackIdx = (idx % 5) + 1;
+
           return (
             <li className="main-card" key={p.id}>
-              <Link to={`/detail/${p.slug}`} className="main-media">
+              <Link to={`/detail/${encodeURIComponent(p.slug)}`} className="main-media">
+              
                 <img
                   src={p.image}
                   alt={p.name}
                   loading="lazy"
-                  onError={(e) => {
-                    e.currentTarget.src = `${CDN}Best_img${fallbackIdx}.png`;
-                  }}
+                  onError={(e) => (e.currentTarget.src = "/img/placeholder.png")}
                 />
-                {p.soldout && <span className="badge soldout" aria-hidden="true" />}
+                {p.soldout && (
+                  <span className="badge soldout" aria-hidden="true">
+                    SOLD OUT
+                  </span>
+                )}
                 <div className="main-caption">
                   <span className="main-name">{p.name}</span>
                   <span className="main-price">{formatPrice(p.price)}</span>
