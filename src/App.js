@@ -9,9 +9,10 @@ import PageFade from "./components/PageFade";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Chatbot from "./components/Chatbot";
-import AdminSetup from "./routes/AdminSetup";
 import LetterPopup from "./components/LetterPopup";
+import TopButton from "./components/TopButton";
 
+import AdminSetup from "./routes/AdminSetup";
 import MainPage from "./routes/MainPage";
 import LifeStyle from "./routes/LifeStyle";
 import Lighting from "./routes/Lighting";
@@ -236,6 +237,8 @@ export default function App() {
     };
   }, []);
 
+  const isDetail = pathname === "/detail" || pathname.startsWith("/detail/");
+  
   return (
     <>
       {/* ✅ 스플래시: 인트로 자체. 탭 최초 1회만 */}
@@ -292,6 +295,8 @@ export default function App() {
               />
             </Routes>
 
+            {!isDetail && <TopButton showAfter={200} />}
+
             {/* 플로팅 챗봇 버튼 */}
             {!showChatbot && (
               <button
@@ -309,6 +314,7 @@ export default function App() {
             )}
             {showChatbot && <Chatbot onClose={() => setShowChatbot(false)} />}
           </div>
+
 
           {/* ✅ 레터 팝업: 메인에서만, 스플래시 중엔 숨김 */}
           {showPopup && (
