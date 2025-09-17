@@ -79,7 +79,6 @@ h3 {
 :root {
   --fab-base-bottom: 70px;
   --fab-push-up: 0px;
-  /* JS가 필요시 값 업데이트 */
 }
 
 /* 플로팅 아이콘 */
@@ -98,7 +97,7 @@ h3 {
   right: 20px;
   bottom: 20px;
   z-index: 5500;
-  transition: bottom .2s ease, transform .2s ease, opacity .2s ease;
+  transition: bottom .1s ease, transform .2s ease, opacity .2s ease;
 }
 
 /* 모달이 열릴 때 아이콘만 숨김(푸터 보정과 무관) */

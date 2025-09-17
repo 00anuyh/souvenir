@@ -107,9 +107,16 @@ const Chatbot = ({ onClose }) => {
     // 4) 푸터 사이즈 변경 대응
     let ro;
     const footer = document.querySelector("footer");
+
     if (footer && "ResizeObserver" in window) {
-      ro = new ResizeObserver(recalcFooterOverlap);
+      ro = new ResizeObserver(() => {
+        // 🔧 루프 에러 방지: rAF로 한 프레임 뒤에 계산
+        requestAnimationFrame(recalcFooterOverlap);
+      });
       ro.observe(footer);
+
+      // ✅ 초기 1회 계산(옵저버 첫 콜백 전에 빈틈 방지)
+      recalcFooterOverlap();
     }
 
     // 5) 컴포넌트 내부 이미지 로딩 시(배너 등)
