@@ -217,6 +217,7 @@ export default function App() {
       const overlap = Math.max(0, vh - Math.max(rect.top, 0));
       const push = overlap > 0 ? `${overlap}px` : "0px";
       document.documentElement.style.setProperty("--fab-push-up", push);
+      document.documentElement.style.setProperty("--top-push-up", push);
     };
 
     updatePushUp();
@@ -301,7 +302,7 @@ export default function App() {
             {!showChatbot && (
               <button
                 type="button"
-                className="floating-ask"
+                className={`floating-ask ${showChatbot ? "hidden" : ""}`}
                 onClick={() => setShowChatbot(true)}
                 aria-label="도움이 필요하신가요?"
               >

@@ -1,7 +1,7 @@
 .top-btn {
     position: fixed;
     right: 24px;
-    bottom: calc(var(--fab-base-bottom) + var(--fab-push-up) - 50px);
+    bottom: calc(var(--top-base-bottom) + var(--top-push-up));
     z-index: 5000;
     display: inline-flex;
     align-items: center;
@@ -28,7 +28,7 @@
 }
 
 .top-btn:hover {
-    background: #06301A;
+    background: #0;
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
 }
 

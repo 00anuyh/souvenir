@@ -77,8 +77,10 @@ h3 {
 
 /* 전역 변수: 기본 여백 + 푸터 겹침 보정 */
 :root {
-  --fab-base-bottom: 70px;
+  --fab-base-bottom: 100px;
   --fab-push-up: 0px;
+  --top-base-bottom: 20px;
+  --top-push-up: 0px;
 }
 
 /* 플로팅 아이콘 */
@@ -95,7 +97,7 @@ h3 {
 .chatbot-container {
   position: fixed;
   right: 20px;
-  bottom: 20px;
+  bottom: 100px;
   z-index: 5500;
   transition: bottom .1s ease, transform .2s ease, opacity .2s ease;
 }
