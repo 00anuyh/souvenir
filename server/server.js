@@ -189,7 +189,7 @@ app.get('/api/news', async (req, res) => {
     if (hit && Date.now() - hit.t < CACHE_TTL_MS) {
       return res.json(hit.data);
     }
-    
+
     const from = new Date();
     if (fromDays > 0) from.setDate(from.getDate() - fromDays);
 
